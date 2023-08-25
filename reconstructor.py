@@ -16,20 +16,21 @@ class Reconstruction:
         self.output_path = output_path
         self.source_images_path = source_images_path
         self.output_model_name = 'sparse/aligned'
-        self.image_path = os.path.join(self.data_path, 'images4reconstruction')
-        self.reference_file = os.path.join(self.output_path, 'output/camera_GPS_noisy.txt')
+        self.images_path = os.path.join(self.data_path, 'images4reconstruction')
+        self.noisy_gps_file = os.path.join(self.output_path, 'output/camera_GPS_noisy.txt')
+        self.images_base_path = os.path.sep.join(self.data_path.split(os.path.sep)[:-1])
+        self.images_list_file = os.path.join(self.output_path, 'output/images4reconstruction.txt')
         self.error = error
         self.gt_poses = {}
         self.noisy_poses = {}
         self.reconstructed_poses = {}
-        # subprocess.check_output(['alias', 'colmap=colmap'], universal_newlines=True)
 
     # create a symlink for each image that will be used to avoid the hard copy
     def create_symbolic_links(self, poses):
-        assert self.image_path is not None, 'image_path is None'
+        assert self.images_path is not None, 'images_path is None'
         assert self.source_images_path is not None, 'source_images_path is None'
 
-        dest_folder = self.image_path
+        dest_folder = self.images_path
         # Create or overwrite the destination folder
         if os.path.exists(dest_folder):
             shutil.rmtree(dest_folder)
@@ -96,11 +97,17 @@ class Reconstruction:
         K, k1 = self.get_calibration_matrix()
         params = str(K[0][0]) + ', ' + str(K[0][2]) + ', ' \
                 + str(K[1][2]) + ', ' + str(k1)
+        
+        references = [str(p.relative_to(self.images_base_path)) for p in sorted((self.images_path).iterdir())]
+
+        with open(self.images_list_file, "w") as f:
+            f.write("\n".join(references) + "\n")
 
         feature_extractor_args = [
             'colmap', 'feature_extractor',
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
-            '--image_path', self.image_path,
+            '--images_path', self.images_base_path,
+            '--image_list_path',  self.images_list_file,
             '--ImageReader.single_camera', '1',
             '--SiftExtraction.use_gpu', '1',
             '--ImageReader.camera_params', params,
@@ -122,7 +129,8 @@ class Reconstruction:
         mapper_args = [
             'colmap', 'mapper',
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
-            '--image_path', self.image_path,
+            '--images_path', self.images_base_path,
+            '--image_list_path',  self.images_list_file,
             '--output_path', os.path.join(self.output_path, 'sparse'),  # --export_path changed to --output_path in colmap 3.6
             '--Mapper.num_threads', '16',
             '--Mapper.init_min_tri_angle', '4',
@@ -141,7 +149,7 @@ class Reconstruction:
         print('Finished running COLMAP, see {} for logs'.format(logfile_name))
 
     def write_gps_poses(self, poses):
-        with open(self.reference_file, 'w') as f:
+        with open(self.noisy_gps_file, 'w') as f:
             for img_name in poses.keys():
                 try:
                     coords = poses[img_name]
@@ -262,7 +270,7 @@ class Reconstruction:
         self.align_with_gps(output_dir=self.output_path,
                             model_input=os.path.join(self.output_path, 'sparse/0'), 
                             model_output=os.path.join(self.output_path, self.output_model_name), 
-                            reference=self.reference_file, 
+                            reference=self.noisy_gps_file, 
                             logname='alignment_output')
     
         self.reconstructed_poses = self.get_camera_poses(self.output_model_name)
