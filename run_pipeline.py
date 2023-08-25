@@ -113,7 +113,6 @@ class ReconstructionPipeline:
 
             else:
                 if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
-                    plotting = True if (idx==1 or idx==len(self.subfolders)-1) else False
                     localizer = CameraLocalization(output_path=output_path,
                                                 images_ref_path=os.path.join(data_ref_path, 'images4reconstruction'),
                                                 images_temp_path=os.path.join(data_temp_path, 'images4reconstruction'),
@@ -123,7 +122,7 @@ class ReconstructionPipeline:
                                                 matcher=matcher,
                                                 gps_noise=self.gps_error,
                                                 dist_threshold=self.distance_threshold,
-                                                plotting=plotting)
+                                                plotting=True)
                     localizer.run()
 
                     # done flag

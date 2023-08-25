@@ -274,7 +274,7 @@ class CameraLocalization:
 
         # localize query images q
         number_of_matches, number_of_inliers, inlier_ratios = np.empty((0, 1), float), np.empty((0, 1), float), np.empty((0, 1), float)
-        for q in query:
+        for q_id, q in enumerate(query):
             try:
                 ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
                 print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
@@ -287,14 +287,16 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
-                    viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    plt.close('all')
-                    # self.color_matches(images, query_path / q, log, reconstruction)
-                    # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    # plt.close('all')
-                viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
-                self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                    viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
+                    self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                    if q_id % 8 == 0:
+                        visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
+                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                        plt.close('all')
+                        # self.color_matches(images, query_path / q, log, reconstruction)
+                        # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
+                        # plt.close('all')
+
 
                 inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
                 number_of_matches = np.append(number_of_matches, log["num_matches"])
@@ -381,7 +383,7 @@ class CameraLocalization:
 
         # localize query images q
         number_of_matches, number_of_inliers, inlier_ratios = np.empty((0, 1), float), np.empty((0, 1), float), np.empty((0, 1), float)
-        for q in query:
+        for q_id, q in enumerate(query):
             try:
                 ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
                 print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
@@ -394,14 +396,15 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
-                    viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    plt.close('all')
-                    # self.color_matches(images, query_path / q, log, reconstruction)
-                    # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    # plt.close('all')
-                viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
-                self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                    viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
+                    self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                    if q_id % 8 == 0:
+                        visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
+                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                        plt.close('all')
+                        # self.color_matches(images, query_path / q, log, reconstruction)
+                        # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
+                        # plt.close('all')
 
                 inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
                 number_of_matches = np.append(number_of_matches, log["num_matches"])
@@ -536,7 +539,7 @@ class CameraLocalization:
             plt.title('Position errors in camera position')
             plt.figtext(0.125, 0.05, 'Number of improved cameras: ' + str(improved_cams) + '/' + str(len(errors_corr)))
             plt.tick_params(axis='x', which='both', bottom=False)
-            plt.savefig(self.output_path + '/camera_errors.pdf')
+            plt.savefig(self.output_path + '/data/camera_errors.pdf')
             plt.clf()
             plt.close('all')
 
@@ -591,7 +594,7 @@ class CameraLocalization:
             plt.legend((r, c, g), ('Poses $C_1^r$', 'Poses $C_1^c$', 'Poses $C_1^{gt}$'), loc='upper right', fontsize=9)
             plt.axis('equal')
             plt.figtext(0.02, 0.35, error_text, fontsize=9)
-            plt.savefig(self.output_path + '/camera_poses.pdf')
+            plt.savefig(self.output_path + '/data/camera_poses.pdf')
             plt.clf()
             plt.close('all')
 
@@ -644,6 +647,7 @@ class CameraLocalization:
             dist.append(sum(distance_mat[i]))
         center_idx = dist.index(min(dist))
         done = False
+        num_inliers_threshold = len(distance_mat)//10
         while done == False:
             inliers = [center_idx]
             outliers = []
@@ -653,10 +657,14 @@ class CameraLocalization:
                         inliers.append(i)
                     else:
                         outliers.append(i)
-            if len(inliers) > 3:
+            if len(inliers) > num_inliers_threshold:
                 done = True
             else:
                 distance_threshold += 0.05
+                if distance_threshold >= 1.0:
+                    done = True
+                    print(f'cannot find more than {num_inliers_threshold} inliers with distance_threshold=1.0\n \
+                          found {len(inliers)} inliers')
 
         if figure is not None:
             for o in outliers:
