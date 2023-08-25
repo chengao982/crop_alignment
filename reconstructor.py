@@ -168,8 +168,8 @@ class Reconstruction:
             '--input_path', model_input,
             '--output_path', model_output,
             '--ref_images_path', reference,
-            # '--ref_is_gps', '0',
-            # '--alignment_type', 'ecef',
+            '--ref_is_gps', '0',
+            '--alignment_type', 'ecef',
             '--robust_alignment', '1',
             '--robust_alignment_max_error', '1.0',
         ]
