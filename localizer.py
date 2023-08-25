@@ -384,7 +384,7 @@ class CameraLocalization:
         for q in query:
             try:
                 ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
-                print(f'found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+                print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
                 pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']

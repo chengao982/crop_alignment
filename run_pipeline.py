@@ -51,10 +51,11 @@ class ReconstructionPipeline:
         for idx, subfolder in enumerate(self.subfolders):
             print(f"Running intial reconstruction for subfolder {subfolder}...\n")
             
+            output_path = os.path.join(self.initial_models_output_path, subfolder)
+            data_path = os.path.join(self.data_path, subfolder)
+            source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
+
             if not os.path.isfile(os.path.join(output_path, 'done.txt')):
-                output_path = os.path.join(self.initial_models_output_path, subfolder)
-                data_path = os.path.join(self.data_path, subfolder)
-                source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
 
                 if idx == 0:
                     print("Running reconstructor ground truth model ...\n")
@@ -149,12 +150,12 @@ class ReconstructionPipeline:
             start_time = time.time()
             print(f"Running evaulation for subfolder {subfolder}...\n")
 
-            if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
-                identifier = extractor if extractor else matcher
-                output_path = os.path.join(self.output_path, identifier, subfolder)
-                data_gt_path = os.path.join(self.data_path, subfolder)
-                reconstruction_path = os.path.join(output_path, 'sparse/corrected')
+            identifier = extractor if extractor else matcher
+            output_path = os.path.join(self.output_path, identifier, subfolder)
+            data_gt_path = os.path.join(self.data_path, subfolder)
+            reconstruction_path = os.path.join(output_path, 'sparse/corrected')
 
+            if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
                                     reconstruction_path=reconstruction_path,
