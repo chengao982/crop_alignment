@@ -629,6 +629,7 @@ class CameraLocalization:
     # Transform raw_poses with different T first. Then compute distances to other transformed points and
     # get inliers and outliers
     def compute_inlier(self, T, raw_poses, corr_poses, distance_threshold, figure=None):
+        print(f'computing inliers...')
         transformed_points = []
         for t in T:
             trans_poses = {}
@@ -653,7 +654,7 @@ class CameraLocalization:
             dist.append(sum(distance_mat[i]))
         center_idx = dist.index(min(dist))
         done = False
-        num_inliers_threshold = len(distance_mat)//2
+        num_inliers_threshold = len(distance_mat)//10
         while done == False:
             inliers = [center_idx]
             outliers = []
@@ -663,14 +664,20 @@ class CameraLocalization:
                         inliers.append(i)
                     else:
                         outliers.append(i)
+            print(f'distance_threshold: {distance_threshold}, num_inliers: {len(inliers)}')
             if len(inliers) > num_inliers_threshold:
                 done = True
             else:
-                distance_threshold += 0.05
-                if distance_threshold >= 1.0:
-                    done = True
-                    print(f'cannot find more than {num_inliers_threshold} inliers with distance_threshold=1.0\n \
-                          found {len(inliers)} inliers')
+                if distance_threshold < 1.0:
+                    distance_threshold += 0.05
+                else:
+                    if len(inliers) <= 3:
+                        print(f'cannot find more than 3 inliers with distance_threshold=1.0\n \
+                            found {len(inliers)} inliers')
+                        min_3_idx = np.argpartition(distance_mat[center_idx], 3)
+                        inliers = [center_idx] + min_3_idx[:3].tolist()
+                        outliers = min_3_idx[3:].tolist()
+                    done=True
 
         if figure is not None:
             for o in outliers:
