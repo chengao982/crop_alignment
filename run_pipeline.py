@@ -114,8 +114,10 @@ class ReconstructionPipeline:
             else:
                 if os.path.isfile(os.path.join(output_path, 'loc_failed.txt')):
                     if self.use_previous_as_ref:
+                        print(f'Localization failed, abort localization for current & subsequent subfolders\n')
                         break
                     else:
+                        print(f'Localization failed, abort localization for current subfolder\n')
                         continue
 
                 if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
@@ -136,8 +138,10 @@ class ReconstructionPipeline:
                         with open(os.path.join(output_path, 'loc_failed.txt'), 'w') as f:
                             f.write('failed')
                         if self.use_previous_as_ref:
+                            print(f'Localization failed, abort localization for current & subsequent subfolders\n')
                             break
                         else:
+                            print(f'Localization failed, abort localization for current subfolder\n')
                             continue
                     else:
                         # done flag
@@ -172,8 +176,10 @@ class ReconstructionPipeline:
 
             if os.path.isfile(os.path.join(output_path, 'loc_failed.txt')):
                 if self.use_previous_as_ref:
+                    print(f'No localization, abort evaluation for current & subsequent subfolders\n')
                     break
                 else:
+                    print(f'No localization, abort evaluation for current subfolders\n')
                     continue
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
