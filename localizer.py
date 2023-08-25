@@ -373,7 +373,7 @@ class CameraLocalization:
         # extract_features.main(feature_conf, images, image_list=references, feature_path=features)
         pairs_from_covisibility.main(Path(self.reconstruction_ref_path), sfm_pairs, num_matched=5)
         self.add_prefix_to_pair_txt(sfm_pairs, self.images_ref_relative_path, self.images_ref_relative_path)
-        match_dense.main(matcher_conf, sfm_pairs, images, features=features, matches=matches)
+        match_dense.main(matcher_conf, sfm_pairs, Path(self.images_base_path), features=features, matches=matches)
         reconstruction = triangulation.main(
             outputs / 'sift',
             Path(self.reconstruction_ref_path),
@@ -398,7 +398,7 @@ class CameraLocalization:
         # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
         # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
         # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
-        match_dense.main(matcher_conf, loc_pairs, image_dir=images, 
+        match_dense.main(matcher_conf, loc_pairs, image_dir=Path(self.images_base_path), 
                          export_dir=outputs, matches=matches, features=features, max_kps=None)
         ref_ids = []
         for r in references:
