@@ -397,9 +397,9 @@ class CameraLocalization:
                     visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
                     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
                     plt.close()
-                    self.color_matches(images, query_path / q, log, reconstruction)
-                    viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    plt.close()
+                    # self.color_matches(images, query_path / q, log, reconstruction)
+                    # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
+                    # plt.close()
                 viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                 self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
 
@@ -540,8 +540,6 @@ class CameraLocalization:
             plt.clf()
             plt.close()
 
-            fig = plt.figure()
-            ax = fig.add_subplot(projection='3d')
             inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold, figure=ax)
 
             raw_inlier, corr_inlier, gt_inlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)

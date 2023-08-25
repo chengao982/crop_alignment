@@ -50,26 +50,34 @@ class ReconstructionPipeline:
         start_time = time.time()
         for idx, subfolder in enumerate(self.subfolders):
             print(f"Running intial reconstruction for subfolder {subfolder}...\n")
+            
+            if not os.path.isfile(os.path.join(output_path, 'done.txt')):
+                output_path = os.path.join(self.initial_models_output_path, subfolder)
+                data_path = os.path.join(self.data_path, subfolder)
+                source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
 
-            output_path = os.path.join(self.initial_models_output_path, subfolder)
-            data_path = os.path.join(self.data_path, subfolder)
-            source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
+                if idx == 0:
+                    print("Running reconstructor ground truth model ...\n")
+                    reconstructor = Reconstruction(data_path=data_path, 
+                                                output_path=output_path, 
+                                                source_images_path=source_images_path,
+                                                error=0.0)
+                    reconstructor.run()
 
-            if idx == 0:
-                print("Running reconstructor ground truth model ...\n")
-                reconstructor = Reconstruction(data_path=data_path, 
-                                               output_path=output_path, 
-                                               source_images_path=source_images_path,
-                                               error=0.0)
-                reconstructor.run()
+                else:
+                    print(f"Running reconstructor temporal model {idx} ...\n")
+                    reconstructor = Reconstruction(data_path=data_path, 
+                                                output_path=output_path, 
+                                                source_images_path=source_images_path,
+                                                error=self.gps_error)
+                    reconstructor.run()
+
+                # done flag
+                with open(os.path.join(output_path, 'done.txt'), 'w') as f:
+                    f.write('done')
 
             else:
-                print(f"Running reconstructor temporal model {idx} ...\n")
-                reconstructor = Reconstruction(data_path=data_path, 
-                                               output_path=output_path, 
-                                               source_images_path=source_images_path,
-                                               error=self.gps_error)
-                reconstructor.run()
+                print(f'Initial model of {subfolder} already exists\n')
 
         end_time = time.time()
         run_time = end_time - start_time
@@ -103,18 +111,25 @@ class ReconstructionPipeline:
                 previous_reconstruction_ref_path = reconstruction_ref_path
 
             else:
-                plotting = True if (idx==1 or idx==len(self.subfolders)-1) else False
-                localizer = CameraLocalization(output_path=output_path,
-                                               images_ref_path=os.path.join(data_ref_path, 'images4reconstruction'),
-                                               images_temp_path=os.path.join(data_temp_path, 'images4reconstruction'),
-                                               reconstruction_ref_path=reconstruction_ref_path,
-                                               reconstruction_temp_path=reconstruction_temp_path,
-                                               extractor=extractor,
-                                               matcher=matcher,
-                                               gps_noise=self.gps_error,
-                                               dist_threshold=self.distance_threshold,
-                                               plotting=plotting)
-                localizer.run()
+                if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
+                    plotting = True if (idx==1 or idx==len(self.subfolders)-1) else False
+                    localizer = CameraLocalization(output_path=output_path,
+                                                images_ref_path=os.path.join(data_ref_path, 'images4reconstruction'),
+                                                images_temp_path=os.path.join(data_temp_path, 'images4reconstruction'),
+                                                reconstruction_ref_path=reconstruction_ref_path,
+                                                reconstruction_temp_path=reconstruction_temp_path,
+                                                extractor=extractor,
+                                                matcher=matcher,
+                                                gps_noise=self.gps_error,
+                                                dist_threshold=self.distance_threshold,
+                                                plotting=plotting)
+                    localizer.run()
+
+                    # done flag
+                    with open(os.path.join(output_path, 'loc_done.txt'), 'w') as f:
+                        f.write('done')
+                else:
+                    print(f'Localization for {subfolder} has already been done\n')
 
                 previous_data_ref_path = data_temp_path
                 previous_reconstruction_ref_path = os.path.join(output_path, 'sparse/corrected')
@@ -134,18 +149,25 @@ class ReconstructionPipeline:
             start_time = time.time()
             print(f"Running evaulation for subfolder {subfolder}...\n")
 
-            identifier = extractor if extractor else matcher
-            output_path = os.path.join(self.output_path, identifier, subfolder)
-            data_gt_path = os.path.join(self.data_path, subfolder)
-            reconstruction_path = os.path.join(output_path, 'sparse/corrected')
+            if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
+                identifier = extractor if extractor else matcher
+                output_path = os.path.join(self.output_path, identifier, subfolder)
+                data_gt_path = os.path.join(self.data_path, subfolder)
+                reconstruction_path = os.path.join(output_path, 'sparse/corrected')
 
-            evaluator = Evaluation(data_gt_path=data_gt_path,
-                                   output_path=output_path,
-                                   reconstruction_path=reconstruction_path,
-                                   translation_error_thres=self.translation_error_thres,
-                                   rotation_error_thres=self.rotation_error_thres,
-                                   ground_dist_threshold=self.ground_dist_threshold)
-            evaluator.run()
+                evaluator = Evaluation(data_gt_path=data_gt_path,
+                                    output_path=output_path,
+                                    reconstruction_path=reconstruction_path,
+                                    translation_error_thres=self.translation_error_thres,
+                                    rotation_error_thres=self.rotation_error_thres,
+                                    ground_dist_threshold=self.ground_dist_threshold)
+                evaluator.run()
+
+                # done flag
+                with open(os.path.join(output_path, 'eval_done.txt'), 'w') as f:
+                    f.write('done')
+            else:
+                print(f'Evaluation for {subfolder} has already been done\n')
 
             end_time = time.time()
             run_time = end_time - start_time
@@ -191,6 +213,6 @@ if __name__ == "__main__":
     polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] #RB, RT, LT, LB, covering the central field
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
     # pipeline.generate_poses(polygon_corners, minimum_distance)
-    # pipeline.build_inital_models()
+    pipeline.build_inital_models()
     pipeline.localize_cameras()
     pipeline.evalate()
