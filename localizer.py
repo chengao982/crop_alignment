@@ -382,7 +382,7 @@ class CameraLocalization:
         # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
         # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
         match_dense.main(matcher_conf, loc_pairs, image_dir=Path(self.images_base_path), 
-                         export_dir=outputs, features=features, matches=matches, max_kps=None)
+                         export_dir=outputs, matches=matches, features=features, features_ref=features, max_kps=None)
         ref_ids = []
         for r in references:
             try:
@@ -403,36 +403,36 @@ class CameraLocalization:
         # localize query images q
         number_of_matches, number_of_inliers, inlier_ratios = np.empty((0, 1), float), np.empty((0, 1), float), np.empty((0, 1), float)
         for q_id, q in enumerate(query):
-            try:
-                ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
-                print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
-                pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
-                R = read_write_model.qvec2rotmat(ret['qvec'])
-                Tr = ret['tvec']
-                pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
-                camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
-                transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
-                                            [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
-                
-                if self.plotting:
-                    viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
-                    self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                    if q_id % 8 == 0:
-                        visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
-                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                        plt.close('all')
-                        # self.color_matches(images, query_path / q, log, reconstruction)
-                        # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                        # plt.close('all')
+            # try:
+            ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
+            print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+            pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
+            R = read_write_model.qvec2rotmat(ret['qvec'])
+            Tr = ret['tvec']
+            pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
+            camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
+            transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
+                                        [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
+            
+            if self.plotting:
+                viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
+                self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                if q_id % 8 == 0:
+                    visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
+                    viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                    plt.close('all')
+                    # self.color_matches(images, query_path / q, log, reconstruction)
+                    # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
+                    # plt.close('all')
 
-                inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
-                number_of_matches = np.append(number_of_matches, log["num_matches"])
-                number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
-            except:
-                print(f'{q} localization failed')
-                inlier_ratios = np.append(inlier_ratios, 0.0)
-                number_of_matches = np.append(number_of_matches, 0.0)
-                number_of_inliers = np.append(number_of_inliers, 0.0)
+            inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
+            number_of_matches = np.append(number_of_matches, log["num_matches"])
+            number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
+            # except:
+            #     print(f'{q} localization failed')
+            #     inlier_ratios = np.append(inlier_ratios, 0.0)
+            #     number_of_matches = np.append(number_of_matches, 0.0)
+            #     number_of_inliers = np.append(number_of_inliers, 0.0)
 
         # save data
         with open(outputs / 'localization_data.json', 'w') as outfile:
