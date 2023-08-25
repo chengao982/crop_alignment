@@ -172,7 +172,7 @@ class Evaluation:
         if not os.path.exists(p):
             os.makedirs(p)
         viz.save_plot(p + '/pose_err_hist.pdf', dpi=300)
-        plt.close()
+        plt.close('all')
 
     # returns the markers position in img coordinates and marker position in GPS coords
     def read_marker_img_pos(self):
@@ -340,7 +340,7 @@ class Evaluation:
         plt.tick_params(axis='x', which='both', bottom=False)
         plt.savefig(os.path.join(path, title + '_errors.pdf'))
         plt.clf()
-        plt.close()
+        plt.close('all')
 
         return data_list, ground_truth_list, error_text, error3D_list, error2D_list, names
     
@@ -377,7 +377,7 @@ class Evaluation:
         fig.suptitle(f'Ground Error\nvalid GCP ratio = {100*valid_ratio:.2f}%')
 
         viz.save_plot(os.path.join(path, title + '_error_hist.pdf'), dpi=300)
-        plt.close()
+        plt.close('all')
 
     # create plots
     def plot_GCP(self, markers_data, markers_ground_truth, title):
@@ -410,7 +410,7 @@ class Evaluation:
         # plt.axis('equal')
         # plt.savefig(p + '/' + title + '.pdf')
         plt.clf()
-        plt.close()
+        plt.close('all')
 
         p = os.path.join(self.output_path, 'output/details')
         if not os.path.exists(p):

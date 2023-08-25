@@ -92,7 +92,7 @@ class ImagePoseGenerator:
         plt.legend()
         plt.grid()
         plt.show()
-        plt.close()
+        plt.close('all')
 
 
 

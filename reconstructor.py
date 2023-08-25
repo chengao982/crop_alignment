@@ -252,7 +252,7 @@ class Reconstruction:
         # plt.axis('equal')
         # plt.savefig(p + '/' + name+'.pdf')
         plt.clf()
-        plt.close()
+        plt.close('all')
 
     def run(self):
         self.get_gps_poses(add_noise=True)

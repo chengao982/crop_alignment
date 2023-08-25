@@ -277,7 +277,7 @@ class CameraLocalization:
         for q in query:
             try:
                 ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
-                print(f'found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+                print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
                 pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']
@@ -289,10 +289,10 @@ class CameraLocalization:
                 if self.plotting:
                     visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
                     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    plt.close()
+                    plt.close('all')
                     # self.color_matches(images, query_path / q, log, reconstruction)
                     # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    # plt.close()
+                    # plt.close('all')
                 viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                 self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
 
@@ -396,10 +396,10 @@ class CameraLocalization:
                 if self.plotting:
                     visualization.visualize_loc_from_log(images, query_path / q, log, reconstruction)
                     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    plt.close()
+                    plt.close('all')
                     # self.color_matches(images, query_path / q, log, reconstruction)
                     # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    # plt.close()
+                    # plt.close('all')
                 viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                 self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
 
@@ -538,7 +538,7 @@ class CameraLocalization:
             plt.tick_params(axis='x', which='both', bottom=False)
             plt.savefig(self.output_path + '/camera_errors.pdf')
             plt.clf()
-            plt.close()
+            plt.close('all')
 
             inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold, figure=ax)
 
@@ -591,7 +591,7 @@ class CameraLocalization:
             plt.figtext(0.02, 0.35, error_text, fontsize=9)
             plt.savefig(self.output_path + '/camera_poses.pdf')
             plt.clf()
-            plt.close()
+            plt.close('all')
 
             print("plots created")
 
@@ -674,7 +674,7 @@ class CameraLocalization:
             figure.set_title('Inliers and Outliers')
             plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
             plt.clf()
-            plt.close()
+            plt.close('all')
 
         names_inlier = []
         for i in inliers:
