@@ -90,7 +90,7 @@ class ReconstructionPipeline:
 
         for idx, subfolder in enumerate(self.subfolders):
             start_time = time.time()
-            print(f"Running localization for subfolder {subfolder}...\n")
+            print(f"Running localization for subfolder {subfolder}...")
 
             identifier = extractor if extractor else matcher
             output_path = os.path.join(self.output_path, identifier, subfolder)
@@ -167,7 +167,7 @@ class ReconstructionPipeline:
     def _evaluate(self, extractor, matcher):
         for subfolder in self.subfolders:
             start_time = time.time()
-            print(f"Running evaulation for subfolder {subfolder}...\n")
+            print(f"Running evaulation for subfolder {subfolder}...")
 
             identifier = extractor if extractor else matcher
             output_path = os.path.join(self.output_path, identifier, subfolder)

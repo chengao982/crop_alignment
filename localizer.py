@@ -306,6 +306,7 @@ class CameraLocalization:
                 number_of_matches = np.append(number_of_matches, log["num_matches"])
                 number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
             except:
+                print(f'{q} localization failed')
                 inlier_ratios = np.append(inlier_ratios, 0.0)
                 number_of_matches = np.append(number_of_matches, 0.0)
                 number_of_inliers = np.append(number_of_inliers, 0.0)
@@ -417,6 +418,7 @@ class CameraLocalization:
                 number_of_matches = np.append(number_of_matches, log["num_matches"])
                 number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
             except:
+                print(f'{q} localization failed')
                 inlier_ratios = np.append(inlier_ratios, 0.0)
                 number_of_matches = np.append(number_of_matches, 0.0)
                 number_of_inliers = np.append(number_of_inliers, 0.0)
