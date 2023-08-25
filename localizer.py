@@ -252,18 +252,18 @@ class CameraLocalization:
 
         # get features, pairs and matches to localize images in model
         extract_features.main(feature_conf, query_path, image_list=query, feature_path=features)
-        # images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
-        # self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
-        references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
-        pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
+        images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
+        self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
+        # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
+        # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
+        # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
         match_features.main(matcher_conf, loc_pairs, features=features, matches=matches)
-        ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
-        # ref_ids = []
-        # for r in references:
-        #     try:
-        #         ref_ids.append(reconstruction.find_image_with_name(r).image_id)
-        #     except:
-        #         pass
+        ref_ids = []
+        for r in references:
+            try:
+                ref_ids.append(reconstruction.find_image_with_name(r).image_id)
+            except:
+                pass
 
         conf = {
             'estimation': {'ransac': {'max_error': 12}},  # 12
@@ -322,7 +322,7 @@ class CameraLocalization:
     def _localize_cameras_loftr(self):
         # define paths and params
         matcher_conf = match_dense.confs[self.matcher]
-        number_of_neighbors = 4
+        number_of_neighbors = 10
 
         query_path = Path(self.images_temp_path)
         query = sorted([f for f in os.listdir(query_path) if os.path.isfile(os.path.join(query_path, f))])
@@ -364,18 +364,18 @@ class CameraLocalization:
 
         # get features, pairs and matches to localize images in model
         # extract_features.main(feature_conf, query_path, image_list=query, feature_path=features, overwrite=True)
-        # images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
-        # self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
-        references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
-        pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
+        images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
+        self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
+        # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
+        # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
+        # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
         match_dense.main(matcher_conf, loc_pairs, images, outputs, features=features, matches=matches, max_kps=None)
-        ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
-        # ref_ids = []
-        # for r in references:
-        #     try:
-        #         ref_ids.append(reconstruction.find_image_with_name(r).image_id)
-        #     except:
-        #         pass
+        ref_ids = []
+        for r in references:
+            try:
+                ref_ids.append(reconstruction.find_image_with_name(r).image_id)
+            except:
+                pass
 
         conf = {
             'estimation': {'ransac': {'max_error': 12}},  # 12
