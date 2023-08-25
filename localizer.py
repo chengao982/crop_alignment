@@ -44,6 +44,7 @@ class CameraLocalization:
         self.dist_threshold = dist_threshold
         self.extractor = extractor
         self.matcher = matcher
+        self.is_successful = True
 
     # function to get nearest neighbors of imgs_to_add images
     def get_pairs(self, model, imgs_to_add, output, num_matched):
@@ -671,14 +672,14 @@ class CameraLocalization:
                 if distance_threshold < 1.0:
                     distance_threshold += 0.05
                 else:
-                    if len(inliers) <= 3:
-                        print(f'cannot find more than 3 inliers with distance_threshold=1.0\n \
-                            found {len(inliers)} inliers')
-                        min_3_idx = np.argpartition(distance_mat[center_idx], 3)
-                        inliers = [center_idx] + min_3_idx[:3].tolist()
-                        outliers = min_3_idx[3:].tolist()
-                        print(f'min_3_distance{distance_mat[center_idx][min_3_idx[:3]]}')
                     done=True
+                    # if len(inliers) <= 3:
+                    #     print(f'cannot find more than 3 inliers with distance_threshold=1.0\n \
+                    #         found {len(inliers)} inliers')
+                    #     min_3_idx = np.argpartition(distance_mat[center_idx], 3)
+                    #     inliers = [center_idx] + min_3_idx[:3].tolist()
+                    #     outliers = min_3_idx[3:].tolist()
+                    #     print(f'min_3_distance{distance_mat[center_idx][min_3_idx[:3]]}')
 
         if figure is not None:
             for o in outliers:
@@ -729,7 +730,11 @@ class CameraLocalization:
 
         raw_poses, corr_poses, gt_poses, T = self.load_data(self.reconstruction_temp_path, self.output_path, True)
         inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
-        self.correct_model()
+
+        try:
+            self.correct_model()
+        except:
+            self.is_successful = False
 
 
 if __name__ == "__main__":

@@ -112,6 +112,12 @@ class ReconstructionPipeline:
                 previous_reconstruction_ref_path = reconstruction_ref_path
 
             else:
+                if os.path.isfile(os.path.join(output_path, 'loc_failed.txt')):
+                    if self.use_previous_as_ref:
+                        break
+                    else:
+                        continue
+
                 if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
                     localizer = CameraLocalization(output_path=output_path,
                                                 images_ref_path=os.path.join(data_ref_path, 'images4reconstruction'),
@@ -125,9 +131,19 @@ class ReconstructionPipeline:
                                                 plotting=True)
                     localizer.run()
 
-                    # done flag
-                    with open(os.path.join(output_path, 'loc_done.txt'), 'w') as f:
-                        f.write('done')
+                    if localizer.is_successful is False:
+                    # abort localization for subsequent subfolders if alignment failed. not enough inliers have been found
+                        with open(os.path.join(output_path, 'loc_failed.txt'), 'w') as f:
+                            f.write('failed')
+                        if self.use_previous_as_ref:
+                            break
+                        else:
+                            continue
+                    else:
+                        # done flag
+                        with open(os.path.join(output_path, 'loc_done.txt'), 'w') as f:
+                            f.write('done')
+
                 else:
                     print(f'Localization for {subfolder} has already been done\n')
 
@@ -153,6 +169,12 @@ class ReconstructionPipeline:
             output_path = os.path.join(self.output_path, identifier, subfolder)
             data_gt_path = os.path.join(self.data_path, subfolder)
             reconstruction_path = os.path.join(output_path, 'sparse/corrected')
+
+            if os.path.isfile(os.path.join(output_path, 'loc_failed.txt')):
+                if self.use_previous_as_ref:
+                    break
+                else:
+                    continue
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
                 evaluator = Evaluation(data_gt_path=data_gt_path,
