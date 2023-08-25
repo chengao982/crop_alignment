@@ -677,6 +677,7 @@ class CameraLocalization:
                         min_3_idx = np.argpartition(distance_mat[center_idx], 3)
                         inliers = [center_idx] + min_3_idx[:3].tolist()
                         outliers = min_3_idx[3:].tolist()
+                        print(f'min_3_distance{distance_mat[center_idx][min_3_idx[:3]]}')
                     done=True
 
         if figure is not None:
