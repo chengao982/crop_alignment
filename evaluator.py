@@ -433,7 +433,7 @@ class Evaluation:
         logfile = open(logfile_name, 'w')
 
         feature_extractor_args = [
-            '/Applications/COLMAP.app/Contents/MacOS/colmap', 'model_converter',
+            'colmap', 'model_converter',
             '--input_path', os.path.join(self.reconstruction_path),
             '--output_path', os.path.join(self.output_path, 'output/details/aligned'),
             '--output_type', 'TXT',
