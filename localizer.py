@@ -540,6 +540,8 @@ class CameraLocalization:
             plt.clf()
             plt.close('all')
 
+            fig = plt.figure()
+            ax = fig.add_subplot(projection='3d')
             inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold, figure=ax)
 
             raw_inlier, corr_inlier, gt_inlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)
