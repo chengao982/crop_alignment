@@ -102,7 +102,7 @@ class Reconstruction:
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
             '--image_path', self.image_path,
             '--ImageReader.single_camera', '1',
-            '--SiftExtraction.use_gpu', '0',
+            '--SiftExtraction.use_gpu', '1',
             '--ImageReader.camera_params', params,
         ]
         feat_output = (subprocess.check_output(feature_extractor_args, universal_newlines=True))
@@ -112,8 +112,8 @@ class Reconstruction:
         exhaustive_matcher_args = [
             'colmap', match_type,
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
-            '--SiftMatching.use_gpu', '0',
-        ] # TODO: if use_gpu, change to '1'
+            '--SiftMatching.use_gpu', '1',
+        ]
 
         match_output = (subprocess.check_output(exhaustive_matcher_args, universal_newlines=True))
         logfile.write(match_output)
