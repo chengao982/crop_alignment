@@ -74,8 +74,11 @@ class CameraLocalization:
             np.fill_diagonal(invalid, True)
             pairs = pairs_from_poses.pairs_from_score_matrix(scores, invalid, num_matched)
             pairs = [(images[ids[i]].name, images[ids[j]].name) for i, j in pairs]
-            pairs[0] = os.path.join(self.images_ref_relative_path, pairs[0])
-            pairs[1] = os.path.join(self.images_temp_relative_path, pairs[1])
+            print(pairs)
+            print(pairs[0])
+            print(pairs[1])
+            # pairs[0] = os.path.join(self.images_ref_relative_path, pairs[0])
+            # pairs[1] = os.path.join(self.images_temp_relative_path, pairs[1])
             for pair in pairs:
                 pairs_total.append(pair)
 
