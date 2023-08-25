@@ -653,7 +653,7 @@ class CameraLocalization:
             dist.append(sum(distance_mat[i]))
         center_idx = dist.index(min(dist))
         done = False
-        num_inliers_threshold = len(distance_mat)//10
+        num_inliers_threshold = len(distance_mat)//2
         while done == False:
             inliers = [center_idx]
             outliers = []
