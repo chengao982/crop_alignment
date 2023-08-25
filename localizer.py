@@ -93,7 +93,7 @@ class CameraLocalization:
             lines = file.readlines()
 
         # Modify the lines by adding the prefix to both parts
-        modified_lines = [f"{prefix_str1+line.strip().split(' ')[0]}, {prefix_str2+line.strip().split(' ')[1]}" for line in lines]
+        modified_lines = [f"{prefix_str1}/{line.strip().split(' ')[0]}, {prefix_str2}/{line.strip().split(' ')[1]}" for line in lines]
 
         # Write the modified lines back to the original file
         with open(filename, 'w') as file:
