@@ -107,7 +107,7 @@ class Reconstruction:
         feature_extractor_args = [
             'colmap', 'feature_extractor',
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
-            '--images_path', self.images_base_path,
+            '--image_path', self.images_base_path,
             '--image_list_path',  self.images_list_file,
             '--ImageReader.single_camera', '1',
             '--SiftExtraction.use_gpu', '1',
@@ -130,7 +130,7 @@ class Reconstruction:
         mapper_args = [
             'colmap', 'mapper',
             '--database_path', os.path.join(self.output_path, 'output/database.db'),
-            '--images_path', self.images_base_path,
+            '--image_path', self.images_base_path,
             '--image_list_path',  self.images_list_file,
             '--output_path', os.path.join(self.output_path, 'sparse'),  # --export_path changed to --output_path in colmap 3.6
             '--Mapper.num_threads', '16',
