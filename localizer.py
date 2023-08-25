@@ -74,16 +74,30 @@ class CameraLocalization:
             np.fill_diagonal(invalid, True)
             pairs = pairs_from_poses.pairs_from_score_matrix(scores, invalid, num_matched)
             pairs = [(images[ids[i]].name, images[ids[j]].name) for i, j in pairs]
-            pairs = [(os.path.join(self.images_temp_relative_path, i), 
-                      os.path.join(self.images_ref_relative_path, j)) 
-                      for i, j in pairs]
-            
+
             for pair in pairs:
                 pairs_total.append(pair)
 
         logger.info(f'Found {len(pairs_total)} pairs.')
         with open(output, 'w') as f:
             f.write('\n'.join(' '.join(p) for p in pairs_total))
+
+    # A temporpry work around to 
+    # support addinng relative path to image names in the output file,
+    # which is necessary to the image loader of loftr,
+    # or it won't be able to distinguish ref and query images.
+    # This is because the intial reconstruction doesn't include the relative path.
+    def add_prefix_to_pair_txt(self, filename, prefix_str1, prefix_str2):
+        # Read the original file
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+
+        # Modify the lines by adding the prefix to both parts
+        modified_lines = [f"{prefix_str1+line.strip().split(' ')[0]}, {prefix_str2+line.strip().split(' ')[1]}" for line in lines]
+
+        # Write the modified lines back to the original file
+        with open(filename, 'w') as file:
+            file.write('\n'.join(modified_lines))
 
     # adaption of localize_sfm.pose_from_cluster: do not throw error when matching pair
     # does not exist in file
@@ -358,6 +372,7 @@ class CameraLocalization:
 
         # extract_features.main(feature_conf, images, image_list=references, feature_path=features)
         pairs_from_covisibility.main(Path(self.reconstruction_ref_path), sfm_pairs, num_matched=5)
+        self.add_prefix_to_pair_txt(sfm_pairs, self.images_ref_relative_path, self.images_ref_relative_path)
         match_dense.main(matcher_conf, sfm_pairs, images, features=features, matches=matches)
         reconstruction = triangulation.main(
             outputs / 'sift',
@@ -378,11 +393,13 @@ class CameraLocalization:
         # extract_features.main(feature_conf, query_path, image_list=query, feature_path=features, overwrite=True)
         images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
         self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
+        self.add_prefix_to_pair_txt(loc_pairs, self.images_temp_relative_path, self.images_ref_relative_path)
+
         # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
         # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
         # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
-        match_dense.main(matcher_conf, loc_pairs, image_dir=Path(self.images_base_path), 
-                         export_dir=outputs, matches=matches, features=features, features_ref=features, max_kps=None)
+        match_dense.main(matcher_conf, loc_pairs, image_dir=images, 
+                         export_dir=outputs, matches=matches, features=features, max_kps=None)
         ref_ids = []
         for r in references:
             try:
