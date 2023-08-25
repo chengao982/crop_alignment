@@ -46,6 +46,12 @@ class CameraLocalization:
         self.matcher = matcher
         self.is_successful = True
 
+        images_ref_path_components = self.images_ref_path.split(os.path.sep)
+        images_temp_path_components = self.images_temp_path.split(os.path.sep)
+        self.images_ref_relative_path = os.path.sep.join(images_ref_path_components[-2:])
+        self.images_temp_relative_path = os.path.sep.join(images_temp_path_components[-2:])
+        self.images_base_path = os.path.sep.join(images_ref_path_components[:-2])
+
     # function to get nearest neighbors of imgs_to_add images
     def get_pairs(self, model, imgs_to_add, output, num_matched):
         logger.info('Reading the COLMAP model...')
@@ -68,6 +74,8 @@ class CameraLocalization:
             np.fill_diagonal(invalid, True)
             pairs = pairs_from_poses.pairs_from_score_matrix(scores, invalid, num_matched)
             pairs = [(images[ids[i]].name, images[ids[j]].name) for i, j in pairs]
+            pairs[0] = os.path.join(self.images_ref_relative_path, pairs[0])
+            pairs[1] = os.path.join(self.images_temp_relative_path, pairs[1])
             for pair in pairs:
                 pairs_total.append(pair)
 
@@ -371,7 +379,8 @@ class CameraLocalization:
         # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
         # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
         # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
-        match_dense.main(matcher_conf, loc_pairs, images, outputs, features=features, matches=matches, max_kps=None)
+        match_dense.main(matcher_conf, loc_pairs, image_dir=Path(self.images_base_path), 
+                         export_dir=outputs, features=features, matches=matches, max_kps=None)
         ref_ids = []
         for r in references:
             try:

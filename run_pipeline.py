@@ -5,6 +5,7 @@ from localizer import CameraLocalization
 from evaluator import Evaluation
 import time
 import shutil
+import warnings
 
 class ReconstructionPipeline:
     def __init__(self, 
@@ -212,6 +213,8 @@ class ReconstructionPipeline:
             self._evaluate(extractor, matcher)
         
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+
     # data_path = '/Volumes/Plextor/crops'
     # output_path = '/Volumes/Plextor/output'
     # source_images_path = '/Volumes/Plextor/crops'
