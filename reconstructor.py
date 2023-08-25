@@ -98,7 +98,8 @@ class Reconstruction:
         params = str(K[0][0]) + ', ' + str(K[0][2]) + ', ' \
                 + str(K[1][2]) + ', ' + str(k1)
         
-        references = [str(p.relative_to(self.images_base_path)) for p in sorted((self.images_path).iterdir())]
+        references = [str(p.relative_to(Path(self.images_base_path))) 
+                      for p in sorted(Path(self.images_path).iterdir())]
 
         with open(self.images_list_file, "w") as f:
             f.write("\n".join(references) + "\n")
