@@ -225,8 +225,8 @@ if __name__ == "__main__":
     extractor_matchers = [
                         ['sift', 'NN-ratio'],
                         # ['superpoint_max', 'superglue'],
-                        [None, 'loftr'],
-                        # [None, 'loftr_33_0.4'],
+                        # [None, 'loftr'],
+                        [None, 'loftr_33_0.4'],
                         # [None, 'loftr_33_0.4_hc'],
                         # [None, 'loftr_25_0.5'],
                         # [None, 'loftr_25_0.5_hc'],

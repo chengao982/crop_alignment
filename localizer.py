@@ -358,7 +358,7 @@ class CameraLocalization:
 
         outputs = Path(self.output_path + '/data')
         # shutil.rmtree(self.output_path, ignore_errors=True)
-        # outputs.mkdir(parents=True, exist_ok=True)
+        outputs.mkdir(parents=True, exist_ok=True)
         sfm_pairs = outputs / 'pairs-sfm.txt'
         loc_pairs = outputs / 'pairs-loc.txt'
         features = outputs / 'features.h5'
