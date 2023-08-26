@@ -30,7 +30,7 @@ class Evaluation:
         self.rotation_error_thres = rotation_error_thres
         self.ground_dist_threshold = ground_dist_threshold
 
-        self.images = read_images_binary(os.path.join(reconstruction_path, 'images.bin'))
+        self.images_bin = read_images_binary(os.path.join(reconstruction_path, 'images.bin'))
         self.translation_coords = np.loadtxt(os.path.join(data_gt_path, 'Processed/translation_vector.txt'))
         self.gt_poses = self.get_gt_poses(self.data_gt_path)
         self.aligned_poses = self.get_aligned_poses(self.reconstruction_path)
@@ -271,7 +271,7 @@ class Evaluation:
                 img_name = observation[0]
                 for idx in images.keys():
                     img = images.get(idx)
-                    if img_name == img.name:
+                    if img_name == os.path.basename(img.name):
                         K, distortion = self.get_calibration_matrix(from_reconstruction, img.camera_id)
                         img_coords = np.array([[observation[1][0]], [observation[1][1]], [1.0]])
                         tdist = np.matmul(np.linalg.inv(K), img_coords)
@@ -468,8 +468,8 @@ class Evaluation:
         self.plot_camera_error(dt_list, dr_list)
 
         markers, markers_gps_pos = self.read_marker_img_pos()
-        markers_reconstruction = self.get_marker_gps_position(markers, self.images, from_reconstruction=True)
-        # markers_data = self.get_marker_gps_position(markers, self.images, from_reconstruction=False)
+        markers_reconstruction = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=True)
+        # markers_data = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=False)
 
         self.plot_GCP(markers_reconstruction, markers_gps_pos, 'GCP_positions')
         self.convert_to_txt()
