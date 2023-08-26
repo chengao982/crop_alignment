@@ -62,7 +62,8 @@ class Evaluation:
             Tr = img.tvec
             tvec = -R.T.dot(Tr)
             qvec = read_write_model.rotmat2qvec(R.T)
-            poses.update({img.name: np.append(tvec, qvec)})
+            img_name = os.path.basename(img.name)
+            poses.update({img_name: np.append(tvec, qvec)})
 
         poses = dict(sorted(poses.items()))
         return poses

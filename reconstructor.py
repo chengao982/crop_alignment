@@ -16,10 +16,14 @@ class Reconstruction:
         self.output_path = output_path
         self.source_images_path = source_images_path
         self.output_model_name = 'sparse/aligned'
+
         self.images_path = os.path.join(self.data_path, 'images4reconstruction')
         self.noisy_gps_file = os.path.join(self.output_path, 'output/camera_GPS_noisy.txt')
-        self.images_base_path = os.path.sep.join(self.data_path.split(os.path.sep)[:-1])
         self.images_list_file = os.path.join(self.output_path, 'output/images4reconstruction.txt')
+        images_path_components = self.images_path.split(os.path.sep)
+        self.images_base_path = os.path.sep.join(images_path_components[:-2])
+        self.images_relative_path = os.path.sep.join(images_path_components[-2:])
+
         self.error = error
         self.gt_poses = {}
         self.noisy_poses = {}
@@ -154,6 +158,7 @@ class Reconstruction:
             for img_name in poses.keys():
                 try:
                     coords = poses[img_name]
+                    img_name = os.path.join(self.images_relative_path, img_name)
                     f.write(img_name + ' ' + str(coords[0]) + ' ' +
                             str(coords[1]) + ' ' + str(coords[2]) + '\n')
                 except:

@@ -489,7 +489,8 @@ class CameraLocalization:
         for id in images_raw:
             R = images_raw[id].qvec2rotmat()
             pos = np.matmul(-np.linalg.inv(R), images_raw[id].tvec)
-            raw_poses.update({images_raw[id].name: pos})
+            img_name = os.path.basename(images_raw[id].name)
+            raw_poses.update({img_name: pos})
         raw_poses = dict(sorted(raw_poses.items()))
 
         with open(corrected_path + '/data/localization_data.json', "r") as infile:
@@ -510,7 +511,8 @@ class CameraLocalization:
             T_raw = {}
             for key in T_corr:
                 for id in images_raw:
-                    if images_raw[id].name == key:
+                    img_name = os.path.basename(images_raw[id].name)
+                    if img_name == key:
                         R = images_raw[id].qvec2rotmat()
                         T_mat_raw = [[R[0][0], R[0][1], R[0][2], images_raw[id].tvec[0]],
                                     [R[1][0], R[1][1], R[1][2], images_raw[id].tvec[1]],
@@ -640,24 +642,17 @@ class CameraLocalization:
 
             print("plots created")
 
-            with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
-                for img_name in inliers:
-                    coords = corr_poses[img_name]
-                    f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
-            print("inlier_GPS.txt created in .../data/")
-
-            return inliers, outliers
-
         else:
             inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
 
-            with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
-                for img_name in inliers:
-                    coords = corr_poses[img_name]
-                    f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
-            print("inlier_GPS.txt created in .../data/")
+        with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
+            for img_name in inliers:
+                coords = corr_poses[img_name]
+                img_name = os.path.join(self.images_temp_relative_path, img_name)
+                f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
+        print("inlier_GPS.txt created in .../data/")
 
-            return inliers, outliers
+        return inliers, outliers
 
 
     # Transform raw_poses with different T first. Then compute distances to other transformed points and
