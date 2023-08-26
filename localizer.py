@@ -306,7 +306,7 @@ class CameraLocalization:
             try:
                 q_path = q
                 q = os.path.basename(q)
-                ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
+                ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
                 print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
                 pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
                 R = read_write_model.qvec2rotmat(ret['qvec'])
@@ -424,7 +424,7 @@ class CameraLocalization:
             # try:
             q_path = q
             q = os.path.basename(q)
-            ret, log = self.pose_from_cluster_try(localizer, q, camera, ref_ids, features, matches)
+            ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
             print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
             pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
             R = read_write_model.qvec2rotmat(ret['qvec'])
