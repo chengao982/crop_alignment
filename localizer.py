@@ -82,23 +82,6 @@ class CameraLocalization:
         with open(output, 'w') as f:
             f.write('\n'.join(' '.join(p) for p in pairs_total))
 
-    # A temporpry work around to 
-    # support addinng relative path to image names in the output file,
-    # which is necessary to the image loader of loftr,
-    # or it won't be able to distinguish ref and query images.
-    # This is because the intial reconstruction doesn't include the relative path.
-    # def add_prefix_to_pair_txt(self, filename, prefix_str1, prefix_str2):
-    #     # Read the original file
-    #     with open(filename, 'r') as file:
-    #         lines = file.readlines()
-
-    #     # Modify the lines by adding the prefix to both parts
-    #     modified_lines = [f"{prefix_str1}/{line.strip().split(' ')[0]} {prefix_str2}/{line.strip().split(' ')[1]}" for line in lines]
-
-    #     # Write the modified lines back to the original file
-    #     with open(filename, 'w') as file:
-    #         file.write('\n'.join(modified_lines))
-
     # adaption of localize_sfm.pose_from_cluster: do not throw error when matching pair
     # does not exist in file
     def pose_from_cluster_try(self, localizer: QueryLocalizer, qname: str, query_camera: pycolmap.Camera,
@@ -237,14 +220,13 @@ class CameraLocalization:
         matcher_conf = match_features.confs[self.matcher]
         number_of_neighbors = 10
 
-        # query_path = Path(self.images_temp_path)
         images = Path(self.images_base_path)
         references = [str(p.relative_to(images)) for p in sorted((Path(self.images_ref_path)).iterdir())]
         queries = [str(p.relative_to(images)) for p in sorted((Path(self.images_temp_path)).iterdir())]
 
         outputs = Path(self.output_path + '/data')
         # shutil.rmtree(self.output_path, ignore_errors=True)
-        # outputs.mkdir(parents=True, exist_ok=True)
+        outputs.mkdir(parents=True, exist_ok=True)
         sfm_pairs = outputs / 'pairs-sfm.txt'
         loc_pairs = outputs / 'pairs-loc.txt'
         features = outputs / 'features.h5'
@@ -371,9 +353,7 @@ class CameraLocalization:
         temp_model = pycolmap.Reconstruction(self.reconstruction_temp_path)
         camera = temp_model.cameras[1]
 
-        # extract_features.main(feature_conf, images, image_list=references, feature_path=features)
         pairs_from_covisibility.main(Path(self.reconstruction_ref_path), sfm_pairs, num_matched=5)
-        # self.add_prefix_to_pair_txt(sfm_pairs, self.images_ref_relative_path, self.images_ref_relative_path)
         match_dense.main(matcher_conf, sfm_pairs, images, features=features, matches=matches)
         reconstruction = triangulation.main(
             outputs / 'sift',
@@ -391,11 +371,8 @@ class CameraLocalization:
 
 
         # get features, pairs and matches to localize images in model
-        # extract_features.main(feature_conf, query_path, image_list=query, feature_path=features, overwrite=True)
         images_to_add = read_images_binary(os.path.join(self.reconstruction_temp_path, 'images.bin'))
         self.get_pairs(Path(self.reconstruction_ref_path), images_to_add, loc_pairs, number_of_neighbors)
-        # self.add_prefix_to_pair_txt(loc_pairs, self.images_temp_relative_path, self.images_ref_relative_path)
-
         # references_registered = [reconstruction.images[i].name for i in reconstruction.reg_image_ids()]
         # pairs_from_exhaustive.main(loc_pairs, image_list=query, ref_list=references_registered)
         # ref_ids = [reconstruction.find_image_with_name(n).image_id for n in references_registered]
@@ -421,38 +398,38 @@ class CameraLocalization:
         # localize query images q
         number_of_matches, number_of_inliers, inlier_ratios = np.empty((0, 1), float), np.empty((0, 1), float), np.empty((0, 1), float)
         for q_id, q in enumerate(queries):
-            # try:
-            q_path = q
-            q = os.path.basename(q)
-            ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
-            print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
-            pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
-            R = read_write_model.qvec2rotmat(ret['qvec'])
-            Tr = ret['tvec']
-            pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
-            camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
-            transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
-                                        [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
-            
-            if self.plotting:
-                viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
-                self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                if q_id % 8 == 0:
-                    visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
-                    viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    plt.close('all')
-                    # self.color_matches(images, q_path, log, reconstruction)
-                    # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
-                    # plt.close('all')
+            try:
+                q_path = q
+                q = os.path.basename(q)
+                ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
+                print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+                pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
+                R = read_write_model.qvec2rotmat(ret['qvec'])
+                Tr = ret['tvec']
+                pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
+                camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
+                transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
+                                            [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
+                
+                if self.plotting:
+                    viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
+                    self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
+                    if q_id % 8 == 0:
+                        visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
+                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                        plt.close('all')
+                        # self.color_matches(images, q_path, log, reconstruction)
+                        # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
+                        # plt.close('all')
 
-            inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
-            number_of_matches = np.append(number_of_matches, log["num_matches"])
-            number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
-            # except:
-            #     print(f'{q} localization failed')
-            #     inlier_ratios = np.append(inlier_ratios, 0.0)
-            #     number_of_matches = np.append(number_of_matches, 0.0)
-            #     number_of_inliers = np.append(number_of_inliers, 0.0)
+                inlier_ratios = np.append(inlier_ratios, ret["num_inliers"] / len(ret["inliers"]))
+                number_of_matches = np.append(number_of_matches, log["num_matches"])
+                number_of_inliers = np.append(number_of_inliers, ret["num_inliers"])
+            except:
+                print(f'{q} localization failed')
+                inlier_ratios = np.append(inlier_ratios, 0.0)
+                number_of_matches = np.append(number_of_matches, 0.0)
+                number_of_inliers = np.append(number_of_inliers, 0.0)
 
         # save data
         with open(outputs / 'localization_data.json', 'w') as outfile:
@@ -683,7 +660,7 @@ class CameraLocalization:
             dist.append(sum(distance_mat[i]))
         center_idx = dist.index(min(dist))
         done = False
-        num_inliers_threshold = max(len(distance_mat)//10, 3)
+        num_inliers_threshold = 3
         while done == False:
             inliers = [center_idx]
             outliers = []
@@ -701,13 +678,6 @@ class CameraLocalization:
                     distance_threshold += 0.05
                 else:
                     done=True
-                    # if len(inliers) <= 3:
-                    #     print(f'cannot find more than 3 inliers with distance_threshold=1.0\n \
-                    #         found {len(inliers)} inliers')
-                    #     min_3_idx = np.argpartition(distance_mat[center_idx], 3)
-                    #     inliers = [center_idx] + min_3_idx[:3].tolist()
-                    #     outliers = min_3_idx[3:].tolist()
-                    #     print(f'min_3_distance{distance_mat[center_idx][min_3_idx[:3]]}')
 
         if figure is not None:
             for o in outliers:

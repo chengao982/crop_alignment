@@ -317,11 +317,13 @@ class Evaluation:
                         str(round(error2D, 5)) + "\n\n"
             names.append("M" + str(id))
 
-        error_text += "Error mean 3D: " + str(round(np.mean(error3D_list), 5)) + \
-                        "\nError std dev 3D: " + str(round(np.std(error3D_list), 5)) + \
-                        "\n\nError mean 2D: " + str(round(np.mean(error2D_list), 5)) + \
-                        "\nError std dev 2D: " + str(round(np.std(error2D_list), 5)) + '\n'
-        print(error_text)
+        error_text_summary = "Error mean 3D: " + str(round(np.mean(error3D_list), 5)) + \
+                            "\nError std dev 3D: " + str(round(np.std(error3D_list), 5)) + \
+                            "\n\nError mean 2D: " + str(round(np.mean(error2D_list), 5)) + \
+                            "\nError std dev 2D: " + str(round(np.std(error2D_list), 5)) + '\n'
+        
+        print(error_text_summary)
+        error_text += error_text_summary
 
         with open(os.path.join(path, title + '_errors.txt'), 'w') as f:
             f.write(error_text)
@@ -461,7 +463,7 @@ class Evaluation:
         pcd.points = o3d.utility.Vector3dVector(file_data)
         pointcloud_path = self.output_path + '/output/details/features_raw.pcd'
         o3d.io.write_point_cloud(pointcloud_path, pcd)
-        print('Pointcloud created')
+        print('Pointcloud created\n')
 
     def run(self):
         dt_list, dr_list = self.get_camera_error()
