@@ -29,7 +29,7 @@ class ReconstructionPipeline:
         self.distance_threshold = distance_threshold
         self.use_previous_as_ref = use_previous_as_ref
         subfolders = next(os.walk(self.data_path))[1]
-        self.subfolders = sorted(subfolders)
+        self.subfolders = sorted(subfolders)[:2]
 
     def generate_poses(self, polygon_corners, minimum_distance=0):
         '''Generate image_poses.txt with interested images that will be used for reconstruction and localization 
@@ -224,12 +224,12 @@ if __name__ == "__main__":
 
     extractor_matchers = [
                         ['sift', 'NN-ratio'],
-                        ['superpoint_max', 'superglue'],
+                        # ['superpoint_max', 'superglue'],
                         [None, 'loftr'],
-                        [None, 'loftr_33_0.4'],
-                        [None, 'loftr_33_0.4_hc'],
-                        [None, 'loftr_25_0.5'],
-                        [None, 'loftr_25_0.5_hc'],
+                        # [None, 'loftr_33_0.4'],
+                        # [None, 'loftr_33_0.4_hc'],
+                        # [None, 'loftr_25_0.5'],
+                        # [None, 'loftr_25_0.5_hc'],
                         ]
     experiment_name = 'version_0'
 
