@@ -218,7 +218,7 @@ if __name__ == "__main__":
     # data_path = '/Volumes/Plextor/crops'
     # output_path = '/Volumes/Plextor/output'
     # source_images_path = '/Volumes/Plextor/crops'
-    data_path = '/home/gao/dataset_loftr/crop/real'
+    data_path = '/home/gao/dataset_loftr/crop/real_first_month'
     output_path = '/home/gao/crop_alignment/output'
     source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
                         [None, 'loftr_25_0.5'],
                         [None, 'loftr_25_0.5_hc'],
                         ]
-    experiment_name = 'version_0'
+    experiment_name = 'version_1'
 
     pipeline = ReconstructionPipeline(data_path=data_path, 
                                       output_path=output_path, 
