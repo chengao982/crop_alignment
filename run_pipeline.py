@@ -238,7 +238,7 @@ if __name__ == "__main__":
                                       source_images_path=source_images_path,
                                       experiment_name=experiment_name, 
                                       extractor_matchers=extractor_matchers,
-                                      use_previous_as_ref=True
+                                      use_previous_as_ref=False
                                       )
     
     polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] #RB, RT, LT, LB, covering the central field
