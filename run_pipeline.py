@@ -243,7 +243,7 @@ if __name__ == "__main__":
     
     polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] #RB, RT, LT, LB, covering the central field
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
-    # pipeline.generate_poses(polygon_corners, minimum_distance)
+    pipeline.generate_poses(polygon_corners, minimum_distance)
     pipeline.build_inital_models()
     pipeline.localize_cameras()
     pipeline.evalate()
