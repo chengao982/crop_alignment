@@ -60,7 +60,7 @@ class ReconstructionPipeline:
             data_path = os.path.join(self.data_path, subfolder)
             source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
 
-            if not os.path.isfile(os.path.join(output_path, 'done.txt')):
+            if not os.path.isfile(os.path.join(output_path, 'rec_done.txt')):
 
                 if idx == 0:
                     print("Running reconstructor ground truth model ...\n")
@@ -79,7 +79,7 @@ class ReconstructionPipeline:
                     reconstructor.run()
 
                 # done flag
-                with open(os.path.join(output_path, 'done.txt'), 'w') as f:
+                with open(os.path.join(output_path, 'rec_done.txt'), 'w') as f:
                     f.write('done')
 
             else:
@@ -90,6 +90,37 @@ class ReconstructionPipeline:
             print(f"Initial Reconstruction Runtime for {subfolder}: {run_time}\n")
 
         print('====================Intial Reconstruction Done====================\n')
+
+    def evalate_reconstruction(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
+        for subfolder in self.subfolders:
+            start_time = time.time()
+            print('-----------------Reconstruction Evaluation-----------------')
+            print(f"Running evaulation for subfolder {subfolder}...")
+
+            output_path = os.path.join(self.initial_models_output_path, subfolder)
+            data_gt_path = os.path.join(self.data_path, subfolder)
+            reconstruction_path = os.path.join(output_path, 'sparse/aligned')
+
+            if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
+                evaluator = Evaluation(data_gt_path=data_gt_path,
+                                    output_path=output_path,
+                                    reconstruction_path=reconstruction_path,
+                                    translation_error_thres=translation_error_thres,
+                                    rotation_error_thres=rotation_error_thres,
+                                    ground_dist_thres=ground_dist_thres)
+                evaluator.run()
+
+                # done flag
+                with open(os.path.join(output_path, 'eval_done.txt'), 'w') as f:
+                    f.write('done')
+            else:
+                print(f'Evaluation for {subfolder} has already been done\n')
+
+            end_time = time.time()
+            run_time = end_time - start_time
+            print(f"Reconstruction Evaulation Runtime for {subfolder}: {run_time}\n")
+
+        print('====================Reconstruction Evaluation Done====================\n')
 
     def _localize_cameras(self, extractor, matcher):
         print(f'==========Start localization with {extractor} / {matcher}==========\n')
@@ -176,7 +207,7 @@ class ReconstructionPipeline:
             extractor, matcher = extractor_matcher
             self._localize_cameras(extractor, matcher)
 
-    def _evaluate(self, extractor, matcher):
+    def _evalate_localization(self, extractor, matcher, translation_error_thres, rotation_error_thres, ground_dist_thres):
         print(f'==========Start evaluation for {extractor} / {matcher}==========\n')
 
         identifier = extractor if extractor else matcher
@@ -202,9 +233,9 @@ class ReconstructionPipeline:
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
                                     reconstruction_path=reconstruction_path,
-                                    translation_error_thres=self.translation_error_thres,
-                                    rotation_error_thres=self.rotation_error_thres,
-                                    ground_dist_threshold=self.ground_dist_threshold)
+                                    translation_error_thres=translation_error_thres,
+                                    rotation_error_thres=rotation_error_thres,
+                                    ground_dist_thre=ground_dist_thres)
                 evaluator.run()
 
                 # done flag
@@ -219,14 +250,10 @@ class ReconstructionPipeline:
 
         print(f'===================={identifier} Evaluation Done====================\n')
 
-    def evalate(self, translation_error_thres, rotation_error_thres, ground_dist_threshold):
-        self.translation_error_thres = translation_error_thres
-        self.rotation_error_thres = rotation_error_thres
-        self.ground_dist_threshold = ground_dist_threshold
-
+    def evalate_localization(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
         for extractor_matcher in self.extractor_matchers:
             extractor, matcher = extractor_matcher
-            self._evaluate(extractor, matcher)
+            self._evalate_localization(extractor, matcher, translation_error_thres, rotation_error_thres, ground_dist_thres)
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
@@ -270,7 +297,10 @@ if __name__ == "__main__":
 
     pipeline.generate_poses(polygon_corners, minimum_distance)
     pipeline.build_inital_models()
+    pipeline.evalate_reconstruction(translation_error_thres=1.0, 
+                                    rotation_error_thres=3.0, 
+                                    ground_dist_thres=1.0)
     pipeline.localize_cameras()
-    pipeline.evalate(translation_error_thres=1.0,
-                      rotation_error_thres=3.0,
-                        ground_dist_threshold=1.0)
+    pipeline.evalate_localization(translation_error_thres=1.0,
+                                  rotation_error_thres=3.0,
+                                  ground_dist_thres=1.0)

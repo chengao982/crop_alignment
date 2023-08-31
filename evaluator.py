@@ -20,7 +20,7 @@ class Evaluation:
                  reconstruction_path,
                  translation_error_thres=1,
                  rotation_error_thres=3,
-                 ground_dist_threshold=0.20
+                 ground_dist_thres=0.20
                  ):
         self.data_gt_path = data_gt_path
         self.output_path = output_path
@@ -28,7 +28,7 @@ class Evaluation:
 
         self.translation_error_thres = translation_error_thres
         self.rotation_error_thres = rotation_error_thres
-        self.ground_dist_threshold = ground_dist_threshold
+        self.ground_dist_thres = ground_dist_thres
 
         self.images_bin = read_images_binary(os.path.join(reconstruction_path, 'images.bin'))
         self.translation_coords = np.loadtxt(os.path.join(data_gt_path, 'Processed/translation_vector.txt'))
@@ -419,7 +419,7 @@ class Evaluation:
         axs[1].set_title(f'2D error mean: {np.mean(error2D_list):.3f}m\n2D error std: {np.std(error2D_list):.3f}m')
         axs[1].set(xlabel="error (m)", ylabel="# of markers")
 
-        valid_mask = np.array(error3D_list) < self.ground_dist_threshold
+        valid_mask = np.array(error3D_list) < self.ground_dist_thres
         valid_ratio = np.sum(valid_mask)/len(error3D_list)
 
         fig.suptitle(f'Ground Error\nvalid GCP ratio = {100*valid_ratio:.2f}%')
@@ -460,7 +460,7 @@ class Evaluation:
         plt.clf()
         plt.close('all')
 
-        p = os.path.join(self.output_path, 'output/details')
+        p = os.path.join(self.output_path, 'eval/details')
         if not os.path.exists(p):
             os.makedirs(p)
 
@@ -475,29 +475,29 @@ class Evaluation:
 
     # save reconstruction in txt format and create pointcloud
     def convert_to_txt(self):
-        p = os.path.join(self.output_path, 'output/details/aligned')
+        p = os.path.join(self.output_path, 'eval/details/aligned')
         if not os.path.exists(p):
             os.makedirs(p)
 
-        logfile_name = os.path.join(self.output_path, 'output/details/colmap_output.txt')
+        logfile_name = os.path.join(self.output_path, 'eval/details/colmap_output.txt')
         logfile = open(logfile_name, 'w')
 
         feature_extractor_args = [
             'colmap', 'model_converter',
             '--input_path', os.path.join(self.reconstruction_path),
-            '--output_path', os.path.join(self.output_path, 'output/details/aligned'),
+            '--output_path', os.path.join(self.output_path, 'eval/details/aligned'),
             '--output_type', 'TXT',
         ]
         converter_output = (subprocess.check_output(feature_extractor_args, universal_newlines=True))
         logfile.write(converter_output)
 
-        file_path = self.output_path + '/output/details/aligned/points3D.txt'
+        file_path = self.output_path + '/eval/details/aligned/points3D.txt'
         with open(file_path) as f:
             lines = f.readlines()
         f.close()
         del lines[0:3]
 
-        raw_file_path = self.output_path + '/output/details/features_raw.txt'
+        raw_file_path = self.output_path + '/eval/details/features_raw.txt'
         with open(raw_file_path, 'w') as f:
             for line in lines:
                 data = line.split()
@@ -508,7 +508,7 @@ class Evaluation:
         file_data = np.loadtxt(raw_file_path, dtype=float)
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(file_data)
-        pointcloud_path = self.output_path + '/output/details/features_raw.pcd'
+        pointcloud_path = self.output_path + '/eval/details/features_raw.pcd'
         o3d.io.write_point_cloud(pointcloud_path, pcd)
         print('Pointcloud created\n')
 
@@ -547,7 +547,7 @@ if __name__ == "__main__":
     output_path = '/path/to/output'
     reconstruction_path = '/path/to/reconstruction_temp'
     estimator = Evaluation(data_gt_path, output_path, reconstruction_path,
-                           translation_error_thres=1, rotation_error_thres=3, ground_dist_threshold=0.20)
+                           translation_error_thres=1, rotation_error_thres=3, ground_dist_thres=0.20)
     estimator.run()
 
     end_time = time.time()
