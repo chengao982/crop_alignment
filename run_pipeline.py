@@ -247,7 +247,7 @@ if __name__ == "__main__":
                                       source_images_path=source_images_path,
                                       experiment_name=experiment_name, 
                                       extractor_matchers=extractor_matchers,
-                                      use_previous_as_ref=False
+                                      use_previous_as_ref=True
                                       )
     
     #RB, RT, LT, LB, covering the central field
