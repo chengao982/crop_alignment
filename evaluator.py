@@ -19,7 +19,7 @@ class Evaluation:
                  output_path, 
                  reconstruction_path,
                  translation_error_thres=1,
-                 rotation_error_thres=2,
+                 rotation_error_thres=3,
                  ground_dist_threshold=0.20
                  ):
         self.data_gt_path = data_gt_path
@@ -152,15 +152,15 @@ class Evaluation:
             patches[i].set_facecolor('b')
         for i in range(4, len(patches)):
             patches[i].set_facecolor('r')
-        axs[0].set_xticks(np.arange(0,1.5,0.25))
+        axs[0].set_xticks(np.arange(0, 1.5, 0.25))
 
-        bins = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+        bins = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
         _, bins, patches = axs[1].hist(np.clip(dr, bins[0], bins[-1]), bins=bins)
-        for i in range(3):    
+        for i in range(6):    
             patches[i].set_facecolor('b')
-        for i in range(3, len(patches)):
+        for i in range(6, len(patches)):
             patches[i].set_facecolor('r')
-        axs[1].set_xticks(np.arange(0,3,0.5))
+        axs[1].set_xticks(np.arange(0, 4, 0.5))
 
         axs[0].set_title(f'mean transl. error: {mean_dt:.3f}m\nof valid poses: {valid_mean_dt:.3f}m')
         axs[0].set(xlabel="error (m)", ylabel="# of poses")
@@ -169,7 +169,7 @@ class Evaluation:
 
         fig.suptitle(f'Camera Pose Error\nvalid pose ratio = {100*valid_ratio:.2f}%')
 
-        p = os.path.join(self.output_path, 'output/plots')
+        p = os.path.join(self.output_path, 'plots')
         if not os.path.exists(p):
             os.makedirs(p)
         viz.save_plot(p + '/pose_err_hist.pdf', dpi=300)
@@ -353,21 +353,21 @@ class Evaluation:
         fig.set_figheight(3)
         fig.set_figwidth(7)
 
-        bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+        bins = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
         _, bins, patches = axs[0].hist(np.clip(error3D_list, bins[0], bins[-1]), bins=bins)
         for i in range(2):    
             patches[i].set_facecolor('b')
         for i in range(2, len(patches)):
             patches[i].set_facecolor('r')
-        axs[0].set_xticks(np.arange(0, 0.7, 0.1))
+        axs[0].set_xticks(np.arange(0, 3.5, 0.7))
 
-        bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+        bins = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
         _, bins, patches = axs[1].hist(np.clip(error2D_list, bins[0], bins[-1]), bins=bins)
         for i in range(2):    
             patches[i].set_facecolor('b')
         for i in range(2, len(patches)):
             patches[i].set_facecolor('r')
-        axs[1].set_xticks(np.arange(0, 0.7, 0.1))
+        axs[1].set_xticks(np.arange(0, 3.5, 0.7))
 
         axs[0].set_title(f'3D error mean: {np.mean(error3D_list):.3f}m\n3D error std: {np.std(error3D_list):.3f}m')
         axs[0].set(xlabel="error (m)", ylabel="# of markers")
@@ -384,7 +384,7 @@ class Evaluation:
 
     # create plots
     def plot_GCP(self, markers_data, markers_ground_truth, title):
-        p = os.path.join(self.output_path, 'output/plots')
+        p = os.path.join(self.output_path, 'plots')
         if not os.path.exists(p):
             os.makedirs(p)
 
@@ -482,7 +482,7 @@ if __name__ == "__main__":
     output_path = '/path/to/output'
     reconstruction_path = '/path/to/reconstruction_temp'
     estimator = Evaluation(data_gt_path, output_path, reconstruction_path,
-                           translation_error_thres=1, rotation_error_thres=2, ground_dist_threshold=0.20)
+                           translation_error_thres=1, rotation_error_thres=3, ground_dist_threshold=0.20)
     estimator.run()
 
     end_time = time.time()

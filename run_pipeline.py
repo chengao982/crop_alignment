@@ -84,6 +84,7 @@ class ReconstructionPipeline:
         end_time = time.time()
         run_time = end_time - start_time
         print(f"Initial Reconstruction Runtime: {run_time}\n")
+        print('===============================================================')
 
     def _localize_cameras(self, extractor, matcher):
         previous_data_ref_path = None
@@ -158,12 +159,14 @@ class ReconstructionPipeline:
             end_time = time.time()
             run_time = end_time - start_time
             print(f"{identifier} Localization Runtime for {subfolder}: {run_time}\n")
+            print('===============================================================')
 
     def localize_cameras(self):
         for extractor_matcher in self.extractor_matchers:
             extractor, matcher = extractor_matcher
             print(f"Running localization with {extractor}/{matcher} ...\n")
             self._localize_cameras(extractor, matcher)
+            print('===============================================================')
 
     def _evaluate(self, extractor, matcher):
         for subfolder in self.subfolders:
@@ -202,7 +205,7 @@ class ReconstructionPipeline:
             run_time = end_time - start_time
             print(f"{identifier} Evaulation Runtime for {subfolder}: {run_time}\n")
 
-    def evalate(self, translation_error_thres=1.0, rotation_error_thres=2.0, ground_dist_threshold=0.2):
+    def evalate(self, translation_error_thres, rotation_error_thres, ground_dist_threshold):
         self.translation_error_thres = translation_error_thres
         self.rotation_error_thres = rotation_error_thres
         self.ground_dist_threshold = ground_dist_threshold
@@ -211,27 +214,33 @@ class ReconstructionPipeline:
             extractor, matcher = extractor_matcher
             print(f"Running evaluation for {extractor}/{matcher} ...\n")
             self._evaluate(extractor, matcher)
+            print('===============================================================')
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
-    # data_path = '/Volumes/Plextor/crops'
+    # data_path = '/Volumes/Plextor/crops_backup'
     # output_path = '/Volumes/Plextor/output'
     # source_images_path = '/Volumes/Plextor/crops'
-    data_path = '/home/gao/dataset_loftr/crop/real_first_month'
+    # data_path = '/home/gao/dataset_loftr/crop/real_first_month'
+    # output_path = '/home/gao/crop_alignment/output'
+    # source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
+
+    data_path = '/home/gao/dataset_loftr/crop/20190313_20190705_int16'
     output_path = '/home/gao/crop_alignment/output'
-    source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
+    source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
+
+    experiment_name = '20190313_20190705_int16'
 
     extractor_matchers = [
                         ['sift', 'NN-ratio'],
                         ['superpoint_max', 'superglue'],
                         [None, 'loftr'],
-                        [None, 'loftr_33_0.4'],
-                        [None, 'loftr_33_0.4_hc'],
+                        # [None, 'loftr_33_0.4'],
+                        # [None, 'loftr_33_0.4_hc'],
                         [None, 'loftr_25_0.5'],
                         [None, 'loftr_25_0.5_hc'],
                         ]
-    experiment_name = 'version_1'
 
     pipeline = ReconstructionPipeline(data_path=data_path, 
                                       output_path=output_path, 
@@ -241,9 +250,14 @@ if __name__ == "__main__":
                                       use_previous_as_ref=False
                                       )
     
-    polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] #RB, RT, LT, LB, covering the central field
+    #RB, RT, LT, LB, covering the central field
+    # polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] # 2018
+    polygon_corners = [(95.2749,4.1106), (119.8873,36.7558), (83.6157,65.8016), (59.0033,33.1364)] # 2019
+    # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
     pipeline.generate_poses(polygon_corners, minimum_distance)
     pipeline.build_inital_models()
     pipeline.localize_cameras()
-    pipeline.evalate()
+    pipeline.evalate(translation_error_thres=1.0,
+                      rotation_error_thres=3.0,
+                        ground_dist_threshold=1.0)
