@@ -207,7 +207,7 @@ class Reconstruction:
         return Evaluation.get_aligned_poses(p)
 
     # this function computes the errors
-    def reconstruction_processing(self, reconstructed_poses, gt_poses, title):
+    def reconstruction_processing(self, reconstructed_poses, gt_poses):
         reconstructed_list = np.empty((0, 3), float)
         ground_truth_list = np.empty((0, 3), float)
         for x in self.reconstructed_poses.keys():
@@ -232,12 +232,12 @@ class Reconstruction:
                             '\nStandard dev: ' + str(round(np.std(error3D), 5)) + \
                             '\n\nAbsolute error in XY:\nMean: ' + str(round(np.mean(error2D), 5)) + \
                             '\nStandard dev: ' + str(round(np.std(error2D), 5))
-        print('Error of ' + title)
+        print('Error of Camera Poses')
         print(error_text)
         return reconstructed_list, ground_truth_list, error_text_compact
 
     # this function creates plots of the reconstructed and ground truth camera poses
-    def plot_coords(self, data, ground_truth, error_text, name):
+    def plot_coords(self, data, ground_truth, error_text):
         xdata, ydata, zdata = zip(*data)
         xground, yground, zground = zip(*ground_truth)
 
@@ -262,9 +262,9 @@ class Reconstruction:
         if not os.path.exists(p):
             os.makedirs(p)
 
-        plt.savefig(p + '/' + name + '_scaled_axis.pdf')
+        plt.savefig(p + '/' + 'Camera_poses_scaled_axis.pdf')
         # plt.axis('equal')
-        # plt.savefig(p + '/' + name+'.pdf')
+        # plt.savefig(p + '/' + 'Camera_poses.pdf')
         plt.clf()
         plt.close('all')
 
@@ -280,8 +280,8 @@ class Reconstruction:
                             logname='alignment_output')
     
         self.reconstructed_poses = self.get_camera_poses(self.output_model_name)
-        data_poses, gt_poses, error_text = self.reconstruction_processing(self.reconstructed_poses, self.gt_poses, 'full_model')
-        self.plot_coords(data_poses, gt_poses, error_text, 'full_model')
+        data_poses, gt_poses, error_text = self.reconstruction_processing(self.reconstructed_poses, self.gt_poses)
+        self.plot_coords(data_poses, gt_poses, error_text)
 
 if __name__ == "__main__":
     start_time = time.time()

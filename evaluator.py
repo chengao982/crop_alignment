@@ -341,7 +341,7 @@ class Evaluation:
         return dict(sorted(markers_from_data.items()))
 
     # ground error computation for plotting 
-    def plot_ground_error_preprocessing(self, markers_data, markers_ground_truth, title, path):
+    def plot_ground_error_preprocessing(self, markers_data, markers_ground_truth, path):
         data_list = np.empty((0, 3), float)
         ground_truth_list = np.empty((0, 3), float)
         error2D_list = []
@@ -370,7 +370,7 @@ class Evaluation:
         print(error_text_summary)
         error_text += error_text_summary
 
-        with open(os.path.join(path, title + '_errors.txt'), 'w') as f:
+        with open(os.path.join(path, 'GCP_positions_errors.txt'), 'w') as f:
             f.write(error_text)
 
         # names.append('Mean')
@@ -386,14 +386,14 @@ class Evaluation:
         plt.ylabel('Error in m', fontsize=9)
         plt.title('Position errors in ground control points')
         plt.tick_params(axis='x', which='both', bottom=False)
-        plt.savefig(os.path.join(path, title + '_errors.pdf'))
+        plt.savefig(os.path.join(path, 'GCP_positions_errors.pdf'))
         plt.clf()
         plt.close('all')
 
         return data_list, ground_truth_list, error_text, error3D_list, error2D_list, names
     
     # plot ground error
-    def plot_ground_error(self, error3D_list, error2D_list, title, path):
+    def plot_ground_error(self, error3D_list, error2D_list, path):
         fig, axs = plt.subplots(1, 2, tight_layout=True)
         fig.set_figheight(3)
         fig.set_figwidth(7)
@@ -424,17 +424,17 @@ class Evaluation:
 
         fig.suptitle(f'Ground Error\nvalid GCP ratio = {100*valid_ratio:.2f}%')
 
-        viz.save_plot(os.path.join(path, title + '_error_hist.pdf'), dpi=300)
+        viz.save_plot(os.path.join(path, 'GCP_positions_error_hist.pdf'), dpi=300)
         plt.close('all')
 
     # create plots
-    def plot_GCP(self, markers_data, markers_ground_truth, title):
+    def plot_GCP(self, markers_data, markers_ground_truth):
         p = os.path.join(self.output_path, 'eval')
         if not os.path.exists(p):
             os.makedirs(p)
 
-        data_list, ground_truth_list, error_text, e_list_3D, e_list_2D, marker_names = self.plot_ground_error_preprocessing(markers_data, markers_ground_truth, title, p)
-        self.plot_ground_error(e_list_3D, e_list_2D, title, p)
+        data_list, ground_truth_list, error_text, e_list_3D, e_list_2D, marker_names = self.plot_ground_error_preprocessing(markers_data, markers_ground_truth, p)
+        self.plot_ground_error(e_list_3D, e_list_2D, p)
 
         x_data, y_data, z_data = zip(*data_list)
         x_ground_truth, y_ground_truth, z_ground_truth = zip(*ground_truth_list)
@@ -453,23 +453,23 @@ class Evaluation:
         g = ax.scatter(x_ground_truth, y_ground_truth, z_ground_truth, c='blue')
         plt.legend((d, g), ('GCP poses from reconstruction', 'Ground truth from data'),
                 loc='upper left', fontsize=9)
-        plt.savefig(p + '/' + title + '_scaled_axis.pdf')
+        plt.savefig(p + '/' + 'GCP_positions_scaled_axis.pdf')
 
         # plt.axis('equal')
-        # plt.savefig(p + '/' + title + '.pdf')
+        # plt.savefig(p + '/' + 'GCP_positions.pdf')
         plt.clf()
         plt.close('all')
 
-        p = os.path.join(self.output_path, 'eval/details')
-        if not os.path.exists(p):
-            os.makedirs(p)
+        # p = os.path.join(self.output_path, 'eval/details')
+        # if not os.path.exists(p):
+        #     os.makedirs(p)
 
-        with open(p + '/' + title + '_data.json', 'w') as outfile:
-            json.dump('# dicts with GCP positions from reconstruction and GCP positions from dataset', outfile)
-            outfile.write('\n')
-            json.dump(markers_data, outfile)
-            outfile.write('\n')
-            json.dump(markers_ground_truth, outfile)
+        # with open(p + '/' + 'GCP_positions_data.json', 'w') as outfile:
+        #     json.dump('# dicts with GCP positions from reconstruction and GCP positions from dataset', outfile)
+        #     outfile.write('\n')
+        #     json.dump(markers_data, outfile)
+        #     outfile.write('\n')
+        #     json.dump(markers_ground_truth, outfile)
 
         return e_list_3D, e_list_2D, marker_names
 
@@ -512,15 +512,23 @@ class Evaluation:
         o3d.io.write_point_cloud(pointcloud_path, pcd)
         print('Pointcloud created\n')
 
-    def save_error_data(self, dt_list, dr_list, img_list, error3D_list, error2D_list, marker_list, path=None):
+    def save_error_data(self, gt_poses, aligned_poses, 
+                        dt_list, dr_list, img_list, 
+                        gt_markers, aligned_markers,
+                        error3D_list, error2D_list, marker_list, 
+                        path=None):
         p = path if path is not None else os.path.join(self.output_path, 'eval')
         if not os.path.exists(p):
             os.makedirs(p)
             
         np.savez_compressed(os.path.join(p, 'error_dict'),
+                            gt_poses=np.array(gt_poses, dtype=object),
+                            aligned_poses=np.array(aligned_poses, dtype=object),
                             img_list=img_list,
                             dt=dt_list,
                             dr=dr_list,
+                            gt_markers=np.array(gt_markers, dtype=object),
+                            aligned_markers=np.array(aligned_markers, dtype=object),
                             marker_list=marker_list,
                             error3D_list=error3D_list,
                             error2D_list=error2D_list)
@@ -536,9 +544,12 @@ class Evaluation:
         markers, markers_gps_pos = self.read_marker_img_pos()
         markers_reconstruction = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=True)
         # markers_data = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=False)
+        error3D_list, error2D_list, marker_list = self.plot_GCP(markers_reconstruction, markers_gps_pos)
 
-        error3D_list, error2D_list, marker_list = self.plot_GCP(markers_reconstruction, markers_gps_pos, 'GCP_positions')
-        self.save_error_data(dt_list, dr_list, img_list, error3D_list, error2D_list, marker_list)
+        self.save_error_data(self.gt_poses, self.aligned_poses,
+                             dt_list, dr_list, img_list, 
+                             markers_gps_pos, markers_reconstruction,
+                             error3D_list, error2D_list, marker_list)
         self.convert_to_txt()
 
 if __name__ == "__main__":
