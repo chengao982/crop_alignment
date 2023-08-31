@@ -42,14 +42,18 @@ class ReconstructionPipeline:
                           will discard image whose distance to its neareat neighbor is smaller than this parameter
         '''
         for subfolder in self.subfolders:
+            print('--------------------Pose File Generation--------------------')
             print(f"Generating image_poses.txt for subfolder {subfolder}\n")
 
             generator = ImagePoseGenerator(os.path.join(self.data_path, subfolder), 'image_poses.txt')
             generator.process_camera_poses(polygon_corners, distance_threshold=minimum_distance)
 
+        print('====================Pose File Generation Done====================\n')
+
     def build_inital_models(self):
-        start_time = time.time()
         for idx, subfolder in enumerate(self.subfolders):
+            start_time = time.time()
+            print('--------------------Intial Reconstruction--------------------')
             print(f"Running intial reconstruction for subfolder {subfolder}...\n")
             
             output_path = os.path.join(self.initial_models_output_path, subfolder)
@@ -81,20 +85,25 @@ class ReconstructionPipeline:
             else:
                 print(f'Initial model of {subfolder} already exists\n')
 
-        end_time = time.time()
-        run_time = end_time - start_time
-        print(f"Initial Reconstruction Runtime: {run_time}\n")
-        print('===============================================================')
+            end_time = time.time()
+            run_time = end_time - start_time
+            print(f"Initial Reconstruction Runtime for {subfolder}: {run_time}\n")
+
+        print('====================Intial Reconstruction Done====================\n')
 
     def _localize_cameras(self, extractor, matcher):
+        print(f'==========Start localization with {extractor} / {matcher}==========\n')
+
         previous_data_ref_path = None
         previous_reconstruction_ref_path = None
 
+        identifier = extractor if extractor else matcher
+
         for idx, subfolder in enumerate(self.subfolders):
             start_time = time.time()
+            print(f'-----------------{identifier} Localization-----------------')
             print(f"Running localization for subfolder {subfolder}...")
 
-            identifier = extractor if extractor else matcher
             output_path = os.path.join(self.output_path, identifier, subfolder)
             data_temp_path = os.path.join(self.data_path, subfolder)
             reconstruction_temp_path = os.path.join(self.initial_models_output_path, subfolder, 'sparse/aligned')
@@ -159,31 +168,34 @@ class ReconstructionPipeline:
             end_time = time.time()
             run_time = end_time - start_time
             print(f"{identifier} Localization Runtime for {subfolder}: {run_time}\n")
-            print('===============================================================')
+
+        print(f'===================={identifier} Localization Done====================\n')
 
     def localize_cameras(self):
         for extractor_matcher in self.extractor_matchers:
             extractor, matcher = extractor_matcher
-            print(f"Running localization with {extractor}/{matcher} ...\n")
             self._localize_cameras(extractor, matcher)
-            print('===============================================================')
 
     def _evaluate(self, extractor, matcher):
+        print(f'==========Start evaluation for {extractor} / {matcher}==========\n')
+
+        identifier = extractor if extractor else matcher
+
         for subfolder in self.subfolders:
             start_time = time.time()
+            print(f'-----------------{identifier} Evaluation-----------------')
             print(f"Running evaulation for subfolder {subfolder}...")
 
-            identifier = extractor if extractor else matcher
             output_path = os.path.join(self.output_path, identifier, subfolder)
             data_gt_path = os.path.join(self.data_path, subfolder)
             reconstruction_path = os.path.join(output_path, 'sparse/corrected')
 
             if os.path.isfile(os.path.join(output_path, 'loc_failed.txt')):
                 if self.use_previous_as_ref:
-                    print(f'No localization, abort evaluation for current & subsequent subfolders\n')
+                    print(f'No localization found, abort evaluation for current & subsequent subfolders\n')
                     break
                 else:
-                    print(f'No localization, abort evaluation for current subfolders\n')
+                    print(f'No localization found, abort evaluation for current subfolders\n')
                     continue
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
@@ -205,6 +217,8 @@ class ReconstructionPipeline:
             run_time = end_time - start_time
             print(f"{identifier} Evaulation Runtime for {subfolder}: {run_time}\n")
 
+        print(f'===================={identifier} Evaluation Done====================\n')
+
     def evalate(self, translation_error_thres, rotation_error_thres, ground_dist_threshold):
         self.translation_error_thres = translation_error_thres
         self.rotation_error_thres = rotation_error_thres
@@ -212,9 +226,7 @@ class ReconstructionPipeline:
 
         for extractor_matcher in self.extractor_matchers:
             extractor, matcher = extractor_matcher
-            print(f"Running evaluation for {extractor}/{matcher} ...\n")
             self._evaluate(extractor, matcher)
-            print('===============================================================')
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
@@ -255,6 +267,7 @@ if __name__ == "__main__":
     polygon_corners = [(95.2749,4.1106), (119.8873,36.7558), (83.6157,65.8016), (59.0033,33.1364)] # 2019
     # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
+
     pipeline.generate_poses(polygon_corners, minimum_distance)
     pipeline.build_inital_models()
     pipeline.localize_cameras()

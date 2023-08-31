@@ -103,6 +103,7 @@ class Evaluation:
     def get_camera_error(self):
         dt_list = []
         dr_list = []
+        img_list = []
         for img in self.aligned_poses.keys():
             try:
                 aligned_tvec = self.aligned_poses[img][0:3]
@@ -116,17 +117,64 @@ class Evaluation:
                 dr = dr/np.pi*180
                 dt_list.append(dt)
                 dr_list.append(dr)
+                img_list.append(img)
 
             except:
                 print(f"{img} Not localized")
                 continue
 
-        return dt_list, dr_list
+        return dt_list, dr_list, img_list
 
+    # camera error computation for plotting 
+    def plot_camera_error_individual(self, dt, dr, img_list, path):
+        error_text = ""
+        for id, img in enumerate(img_list):
+            error_text += "Camera " + img + ":\nTranslation Error: " + str(round(dt[id], 5)) + "\nRotation Error: " + \
+                        str(round(dr[id], 5)) + "\n\n"
+
+        error_text_summary = "Translation Error mean: " + str(round(np.mean(dt), 5)) + \
+                            "\nTranslation Error std dev: " + str(round(np.std(dt), 5)) + \
+                            "\n\nRotation Error mean 2D: " + str(round(np.mean(dr), 5)) + \
+                            "\nRotation Error std dev 2D: " + str(round(np.std(dr), 5)) + '\n'
+        
+        error_text += error_text_summary
+
+        with open(os.path.join(path, 'camera_errors.txt'), 'w') as f:
+            f.write(error_text)
+
+        X = np.arange(len(dt))
+        plt.bar(X, dt, color='b', width=0.25)
+        plt.xticks(fontsize=9)
+        plt.yticks(fontsize=9)
+        plt.ylabel('Error in m', fontsize=9)
+        plt.title('Translation errors of camera poses')
+        plt.tick_params(axis='x', which='both', bottom=False)
+        plt.savefig(os.path.join(path, 'camera_translation_errors.pdf'))
+        plt.clf()
+        plt.close('all')
+
+        X = np.arange(len(dr))
+        plt.bar(X, dr, color='g', width=0.25)
+        plt.xticks(fontsize=9)
+        plt.yticks(fontsize=9)
+        plt.ylabel('Error in °', fontsize=9)
+        plt.title('Rotation errors of camera poses')
+        plt.tick_params(axis='x', which='both', bottom=False)
+        plt.savefig(os.path.join(path,'camera_rotation_errors.pdf'))
+        plt.clf()
+        plt.close('all')
+
+        return error_text
+    
     # plot camera pose error
-    def plot_camera_error(self, dt_list, dr_list):
+    def plot_camera_error(self, dt_list, dr_list, img_list):
         dt = np.array(dt_list)
         dr = np.array(dr_list)
+
+        p = os.path.join(self.output_path, 'eval')
+        if not os.path.exists(p):
+            os.makedirs(p)
+        self.plot_camera_error_individual(dt, dr, img_list, p)
 
         mean_dt = np.mean(dt)
         mean_dr = np.mean(dr)
@@ -169,10 +217,7 @@ class Evaluation:
 
         fig.suptitle(f'Camera Pose Error\nvalid pose ratio = {100*valid_ratio:.2f}%')
 
-        p = os.path.join(self.output_path, 'plots')
-        if not os.path.exists(p):
-            os.makedirs(p)
-        viz.save_plot(p + '/pose_err_hist.pdf', dpi=300)
+        viz.save_plot(p + '/pose_error_hist.pdf', dpi=300)
         plt.close('all')
 
     # returns the markers position in img coordinates and marker position in GPS coords
@@ -296,7 +341,7 @@ class Evaluation:
         return dict(sorted(markers_from_data.items()))
 
     # ground error computation for plotting 
-    def plot_preprocessing(self, markers_data, markers_ground_truth, title, path):
+    def plot_ground_error_preprocessing(self, markers_data, markers_ground_truth, title, path):
         data_list = np.empty((0, 3), float)
         ground_truth_list = np.empty((0, 3), float)
         error2D_list = []
@@ -328,9 +373,9 @@ class Evaluation:
         with open(os.path.join(path, title + '_errors.txt'), 'w') as f:
             f.write(error_text)
 
-        names.append('Mean')
-        error2D_list.append(np.mean(error2D_list))
-        error3D_list.append(np.mean(error3D_list))
+        # names.append('Mean')
+        # error2D_list.append(np.mean(error2D_list))
+        # error3D_list.append(np.mean(error3D_list))
         X = np.arange(len(names))
         a = plt.bar(X + 0.00, error2D_list, color='b', width=0.25)
         b = plt.bar(X + 0.25, error3D_list, color='g', width=0.25)
@@ -384,11 +429,11 @@ class Evaluation:
 
     # create plots
     def plot_GCP(self, markers_data, markers_ground_truth, title):
-        p = os.path.join(self.output_path, 'plots')
+        p = os.path.join(self.output_path, 'eval')
         if not os.path.exists(p):
             os.makedirs(p)
 
-        data_list, ground_truth_list, error_text, e_list_3D, e_list_2D, names = self.plot_preprocessing(markers_data, markers_ground_truth, title, p)
+        data_list, ground_truth_list, error_text, e_list_3D, e_list_2D, marker_names = self.plot_ground_error_preprocessing(markers_data, markers_ground_truth, title, p)
         self.plot_ground_error(e_list_3D, e_list_2D, title, p)
 
         x_data, y_data, z_data = zip(*data_list)
@@ -425,6 +470,8 @@ class Evaluation:
             json.dump(markers_data, outfile)
             outfile.write('\n')
             json.dump(markers_ground_truth, outfile)
+
+        return e_list_3D, e_list_2D, marker_names
 
     # save reconstruction in txt format and create pointcloud
     def convert_to_txt(self):
@@ -465,15 +512,33 @@ class Evaluation:
         o3d.io.write_point_cloud(pointcloud_path, pcd)
         print('Pointcloud created\n')
 
+    def save_error_data(self, dt_list, dr_list, img_list, error3D_list, error2D_list, marker_list, path=None):
+        p = path if path is not None else os.path.join(self.output_path, 'eval')
+        if not os.path.exists(p):
+            os.makedirs(p)
+            
+        np.savez_compressed(os.path.join(p, 'error_dict'),
+                            img_list=img_list,
+                            dt=dt_list,
+                            dr=dr_list,
+                            marker_list=marker_list,
+                            error3D_list=error3D_list,
+                            error2D_list=error2D_list)
+
+    def load_error_data(self, path):
+        error_dict = dict(np.load(path, allow_pickle=True))
+        return error_dict
+
     def run(self):
-        dt_list, dr_list = self.get_camera_error()
-        self.plot_camera_error(dt_list, dr_list)
+        dt_list, dr_list, img_list = self.get_camera_error()
+        self.plot_camera_error(dt_list, dr_list, img_list)
 
         markers, markers_gps_pos = self.read_marker_img_pos()
         markers_reconstruction = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=True)
         # markers_data = self.get_marker_gps_position(markers, self.images_bin, from_reconstruction=False)
 
-        self.plot_GCP(markers_reconstruction, markers_gps_pos, 'GCP_positions')
+        error3D_list, error2D_list, marker_list = self.plot_GCP(markers_reconstruction, markers_gps_pos, 'GCP_positions')
+        self.save_error_data(dt_list, dr_list, img_list, error3D_list, error2D_list, marker_list)
         self.convert_to_txt()
 
 if __name__ == "__main__":

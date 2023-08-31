@@ -227,7 +227,7 @@ class Reconstruction:
                     '\n\nAbsolute error in XY:\nMean: ' + str(round(np.mean(error2D), 5)) + \
                     '\nStandard dev: ' + str(round(np.std(error2D), 5)) + \
                     '\nMax: ' + str(round(np.max(error2D), 5)) + \
-                    '\nMedian: ' + str(round(np.median(error2D), 5)) + '\n____________________________'
+                    '\nMedian: ' + str(round(np.median(error2D), 5)) + '\n'
         error_text_compact = 'Absolute error in 3D:\nMean: ' + str(round(np.mean(error3D), 5)) + \
                             '\nStandard dev: ' + str(round(np.std(error3D), 5)) + \
                             '\n\nAbsolute error in XY:\nMean: ' + str(round(np.mean(error2D), 5)) + \
