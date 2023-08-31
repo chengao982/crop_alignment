@@ -235,7 +235,7 @@ class ReconstructionPipeline:
                                     reconstruction_path=reconstruction_path,
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
-                                    ground_dist_thre=ground_dist_thres)
+                                    ground_dist_thres=ground_dist_thres)
                 evaluator.run()
 
                 # done flag

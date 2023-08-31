@@ -362,7 +362,7 @@ class Evaluation:
                         str(round(error2D, 5)) + "\n\n"
             names.append("M" + str(id))
 
-        error_text_summary = "Error mean 3D: " + str(round(np.mean(error3D_list), 5)) + \
+        error_text_summary = "\nError mean 3D: " + str(round(np.mean(error3D_list), 5)) + \
                             "\nError std dev 3D: " + str(round(np.std(error3D_list), 5)) + \
                             "\n\nError mean 2D: " + str(round(np.mean(error2D_list), 5)) + \
                             "\nError std dev 2D: " + str(round(np.std(error2D_list), 5)) + '\n'
