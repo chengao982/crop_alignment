@@ -134,8 +134,8 @@ class Evaluation:
 
         error_text_summary = "Translation Error mean: " + str(round(np.mean(dt), 5)) + \
                             "\nTranslation Error std dev: " + str(round(np.std(dt), 5)) + \
-                            "\n\nRotation Error mean 2D: " + str(round(np.mean(dr), 5)) + \
-                            "\nRotation Error std dev 2D: " + str(round(np.std(dr), 5)) + '\n'
+                            "\n\nRotation Error mean: " + str(round(np.mean(dr), 5)) + \
+                            "\nRotation Error std dev: " + str(round(np.std(dr), 5)) + '\n'
         
         error_text += error_text_summary
 
@@ -404,7 +404,7 @@ class Evaluation:
             patches[i].set_facecolor('b')
         for i in range(2, len(patches)):
             patches[i].set_facecolor('r')
-        axs[0].set_xticks(np.arange(0, 3.5, 0.7))
+        axs[0].set_xticks(np.arange(0, 3.5, 0.5))
 
         bins = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
         _, bins, patches = axs[1].hist(np.clip(error2D_list, bins[0], bins[-1]), bins=bins)
@@ -412,7 +412,7 @@ class Evaluation:
             patches[i].set_facecolor('b')
         for i in range(2, len(patches)):
             patches[i].set_facecolor('r')
-        axs[1].set_xticks(np.arange(0, 3.5, 0.7))
+        axs[1].set_xticks(np.arange(0, 3.5, 0.5))
 
         axs[0].set_title(f'3D error mean: {np.mean(error3D_list):.3f}m\n3D error std: {np.std(error3D_list):.3f}m')
         axs[0].set(xlabel="error (m)", ylabel="# of markers")
