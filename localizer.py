@@ -720,13 +720,6 @@ class CameraLocalization:
                                     model_output=os.path.join(self.output_path, 'sparse/corrected'), 
                                     reference=os.path.join(self.output_path, 'data/inlier_GPS.txt'), 
                                     logname='correction_output')
-        
-    def correct_model0(self):
-        Reconstruction.align_with_gps(output_dir=self.output_path,
-                                    model_input=os.path.join(os.path.dirname(self.reconstruction_temp_path), '0'), 
-                                    model_output=os.path.join(self.output_path, 'sparse/corrected0'), 
-                                    reference=os.path.join(self.output_path, 'data/inlier_GPS.txt'), 
-                                    logname='correction_output0')
 
     # extract features and localize cameras of temp model in ref model. Then validate the localization and
     # align model with validated cameras
@@ -738,12 +731,6 @@ class CameraLocalization:
 
         raw_poses, corr_poses, gt_poses, T = self.load_data(self.reconstruction_temp_path, self.output_path, True)
         inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
-
-
-        try:
-            self.correct_model0()
-        except:
-            pass
 
         try:
             self.correct_model()
