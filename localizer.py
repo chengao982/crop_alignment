@@ -680,12 +680,16 @@ class CameraLocalization:
                     done=True
 
         if figure is not None:
-            for o in outliers:
-                x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[o])
-                outl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color='black', marker="+", s=5)
             for i in inliers:
                 x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[i])
                 inl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color=[0.0, 1.0, 0.0], marker="+")
+            if outliers:
+                for o in outliers:
+                    x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[o])
+                    outl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color='black', marker="+", s=5)
+                plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
+            else:
+                plt.legend((inl), ('inliers'), loc='upper left', fontsize=5)
 
             figure.set_xlabel('\n\nX direction', fontsize=9)
             figure.set_ylabel('\n\nY direction', fontsize=9)
@@ -695,7 +699,6 @@ class CameraLocalization:
             figure.xaxis.offsetText.set_fontsize(7)
             figure.yaxis.offsetText.set_fontsize(7)
             figure.set_title('Inliers and Outliers')
-            plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
             plt.clf()
             plt.close('all')
 
@@ -717,6 +720,13 @@ class CameraLocalization:
                                     model_output=os.path.join(self.output_path, 'sparse/corrected'), 
                                     reference=os.path.join(self.output_path, 'data/inlier_GPS.txt'), 
                                     logname='correction_output')
+        
+    def correct_model0(self):
+        Reconstruction.align_with_gps(output_dir=self.output_path,
+                                    model_input=os.path.join(os.path.dirname(self.reconstruction_temp_path), '0'), 
+                                    model_output=os.path.join(self.output_path, 'sparse/corrected0'), 
+                                    reference=os.path.join(self.output_path, 'data/inlier_GPS.txt'), 
+                                    logname='correction_output0')
 
     # extract features and localize cameras of temp model in ref model. Then validate the localization and
     # align model with validated cameras
@@ -729,11 +739,16 @@ class CameraLocalization:
         raw_poses, corr_poses, gt_poses, T = self.load_data(self.reconstruction_temp_path, self.output_path, True)
         inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
 
+
+        try:
+            self.correct_model0()
+        except:
+            pass
+
         try:
             self.correct_model()
         except:
             self.is_successful = False
-
 
 if __name__ == "__main__":
     start_time = time.time()
