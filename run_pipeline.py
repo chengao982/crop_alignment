@@ -212,7 +212,7 @@ class ReconstructionPipeline:
 
         identifier = extractor if extractor else matcher
 
-        for subfolder in self.subfolders:
+        for idx, subfolder in enumerate(self.subfolders):
             start_time = time.time()
             print(f'-----------------{identifier} Evaluation-----------------')
             print(f"Running evaulation for subfolder {subfolder}...")
@@ -230,7 +230,8 @@ class ReconstructionPipeline:
                     continue
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
-                try:
+                if idx!= 0:
+                    print('-----------------corrected0-----------------')                    
                     evaluator0 = Evaluation(data_gt_path=data_gt_path,
                                         output_path=os.path.join(output_path, 'eval_corrected0'),
                                         reconstruction_path=os.path.join(output_path, 'sparse/corrected0'),
@@ -238,21 +239,19 @@ class ReconstructionPipeline:
                                         rotation_error_thres=rotation_error_thres,
                                         ground_dist_thres=ground_dist_thres)
                     evaluator0.run()
-                except:
-                    pass
 
+                print('-----------------corrected_aligned-----------------')
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
                                     reconstruction_path=reconstruction_path,
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
                                     ground_dist_thres=ground_dist_thres)
-                try:
-                    evaluator.run_localized()
-                except:
-                    pass
-
                 evaluator.run()
+
+                print('----------------localized------------------')
+                if idx!= 0:
+                    evaluator.run_localized()
 
                 # done flag
                 with open(os.path.join(output_path, 'eval_done.txt'), 'w') as f:
@@ -314,12 +313,12 @@ if __name__ == "__main__":
     # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 
-    pipeline.generate_poses(polygon_corners, minimum_distance)
-    pipeline.build_inital_models()
+    # pipeline.generate_poses(polygon_corners, minimum_distance)
+    # pipeline.build_inital_models()
     pipeline.evalate_reconstruction(translation_error_thres=1.0, 
                                     rotation_error_thres=3.0, 
                                     ground_dist_thres=1.0)
-    pipeline.localize_cameras()
+    # pipeline.localize_cameras()
     pipeline.evalate_localization(translation_error_thres=1.0,
                                   rotation_error_thres=3.0,
                                   ground_dist_thres=1.0)
