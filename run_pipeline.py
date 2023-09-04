@@ -305,10 +305,10 @@ if __name__ == "__main__":
 
     pipeline.generate_poses(polygon_corners, minimum_distance)
     pipeline.build_inital_models()
-    pipeline.evalate_reconstruction(translation_error_thres=1.0, 
-                                    rotation_error_thres=3.0, 
-                                    ground_dist_thres=1.0)
     pipeline.localize_cameras()
+    pipeline.evalate_reconstruction(translation_error_thres=1.0, 
+                                rotation_error_thres=3.0, 
+                                ground_dist_thres=1.0)
     pipeline.evalate_localization(translation_error_thres=1.0,
                                   rotation_error_thres=3.0,
                                   ground_dist_thres=1.0)
