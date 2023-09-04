@@ -577,7 +577,7 @@ class Evaluation:
     
     def run_localized(self):
         self.aligned_poses = self.get_localized_poses()
-        self.output_path = os.path.join(output_path, 'eval_localized')
+        self.output_path = os.path.join(self.output_path, 'eval_localized')
         dt_list, dr_list, img_list = self.get_camera_error()
         self.plot_camera_error(dt_list, dr_list, img_list)
 
