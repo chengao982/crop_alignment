@@ -552,6 +552,35 @@ class Evaluation:
                              error3D_list, error2D_list, marker_list)
         self.convert_to_txt()
 
+    def get_localized_poses(self):
+        with open(self.output_path + '/data/localization_data.json', "r") as infile:
+            data = []
+            for line in infile:
+                data.append(json.loads(line))
+        corr_poses = data[0]
+
+        with open(self.output_path + '/data/transformation_data.json', "r") as infile:
+            data = []
+            for line in infile:
+                data.append(json.loads(line))
+        T_corr = data[0]
+
+        poses = {}
+        for img_name in corr_poses.keys():
+            R = np.array(T_corr[img_name])[:3, :3]
+            tvec = corr_poses[img_name]
+            qvec = read_write_model.rotmat2qvec(R.T)
+            poses.update({img_name: np.append(tvec, qvec)})
+
+        poses = dict(sorted(poses.items()))
+        return poses
+    
+    def run_localized(self):
+        self.aligned_poses = self.get_localized_poses()
+        self.output_path = os.path.join(output_path, 'eval_localized')
+        dt_list, dr_list, img_list = self.get_camera_error()
+        self.plot_camera_error(dt_list, dr_list, img_list)
+
 if __name__ == "__main__":
     start_time = time.time()
     data_gt_path = '/path/to/data_gt'

@@ -230,13 +230,16 @@ class ReconstructionPipeline:
                     continue
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
-                evaluator0 = Evaluation(data_gt_path=data_gt_path,
-                                    output_path=os.path.join(output_path, 'corrected0'),
-                                    reconstruction_path=os.path.join(output_path, 'sparse/corrected0'),
-                                    translation_error_thres=translation_error_thres,
-                                    rotation_error_thres=rotation_error_thres,
-                                    ground_dist_thres=ground_dist_thres)
-                evaluator0.run()
+                try：
+                    evaluator0 = Evaluation(data_gt_path=data_gt_path,
+                                        output_path=os.path.join(output_path, 'eval_corrected0'),
+                                        reconstruction_path=os.path.join(output_path, 'sparse/corrected0'),
+                                        translation_error_thres=translation_error_thres,
+                                        rotation_error_thres=rotation_error_thres,
+                                        ground_dist_thres=ground_dist_thres)
+                    evaluator0.run()
+                except：
+                    pass
 
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
@@ -244,6 +247,11 @@ class ReconstructionPipeline:
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
                                     ground_dist_thres=ground_dist_thres)
+                try:
+                    evaluator.run_localized()
+                except:
+                    pass
+                
                 evaluator.run()
 
                 # done flag
