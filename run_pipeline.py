@@ -265,6 +265,7 @@ class ReconstructionPipeline:
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
+    os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 
     # data_path = '/Volumes/Plextor/crops_backup'
     # output_path = '/Volumes/Plextor/output'
