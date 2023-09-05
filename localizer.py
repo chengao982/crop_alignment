@@ -446,17 +446,18 @@ class CameraLocalization:
         T_raw_cam = np.linalg.inv(T_raw[name])
         T_corr_cam = np.linalg.inv(T_corr[name])
 
-        vec1 = np.array([[1.0], [0.0], [0.0], [1.0]])
-        vec2 = np.array([[0.0], [1.0], [0.0], [1.0]])
-        vec3 = np.array([[0.0], [0.0], [1.0], [1.0]])
-        vec4 = np.array([[1.0], [1.0], [1.0], [1.0]])
+        # vec1 = np.array([[1.0], [0.0], [0.0], [1.0]])
+        # vec2 = np.array([[0.0], [1.0], [0.0], [1.0]])
+        # vec3 = np.array([[0.0], [0.0], [1.0], [1.0]])
+        # vec4 = np.array([[1.0], [1.0], [1.0], [1.0]])
 
-        M_raw = np.column_stack((np.matmul(T_raw_cam, vec1), np.matmul(T_raw_cam, vec2),
-                                np.matmul(T_raw_cam, vec3), np.matmul(T_raw_cam, vec4)))
-        M_corr = np.column_stack((np.matmul(T_corr_cam, vec1), np.matmul(T_corr_cam, vec2),
-                                np.matmul(T_corr_cam, vec3), np.matmul(T_corr_cam, vec4)))
+        # M_raw = np.column_stack((np.matmul(T_raw_cam, vec1), np.matmul(T_raw_cam, vec2),
+        #                         np.matmul(T_raw_cam, vec3), np.matmul(T_raw_cam, vec4)))
+        # M_corr = np.column_stack((np.matmul(T_corr_cam, vec1), np.matmul(T_corr_cam, vec2),
+        #                         np.matmul(T_corr_cam, vec3), np.matmul(T_corr_cam, vec4)))
 
-        T = np.matmul(M_corr, np.linalg.inv(M_raw))
+        # T = np.matmul(M_corr, np.linalg.inv(M_raw))
+        T = np.matmul(T_corr_cam, np.linalg.inv(T_raw_cam))
         return T
 
     # load poses and transformations (if transformation_bool=True) before and after alignment
