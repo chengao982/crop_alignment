@@ -147,8 +147,12 @@ class ReconstructionPipeline:
                 reconstruction_ref_path = os.path.join(self.output_path, identifier, self.subfolders[0], 'sparse/corrected')
 
             if idx == 0:
-                shutil.rmtree(reconstruction_ref_path, ignore_errors=True) # Remove the existing destination folder if it exists
-                shutil.copytree(reconstruction_temp_path, reconstruction_ref_path) # Copy the entire folder from source to destination
+                if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
+                    shutil.rmtree(reconstruction_ref_path, ignore_errors=True) # Remove the existing destination folder if it exists
+                    shutil.copytree(reconstruction_temp_path, reconstruction_ref_path) # Copy the entire folder from source to destination
+                    # done flag
+                    with open(os.path.join(output_path, 'loc_done.txt'), 'w') as f:
+                        f.write('done')
 
                 previous_data_ref_path = data_ref_path
                 previous_reconstruction_ref_path = reconstruction_ref_path
@@ -264,21 +268,21 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 
-    # data_path = '/Volumes/Plextor/crops_backup'
+    # data_path = '/Volumes/Plextor/20190313_20190705_int16'
     # output_path = '/Volumes/Plextor/output'
     # source_images_path = '/Volumes/Plextor/crops'
     # data_path = '/home/gao/dataset_loftr/crop/real_first_month'
     # output_path = '/home/gao/crop_alignment/output'
     # source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
 
-    data_path = '/home/gao/dataset_loftr/crop/20190313_20190708_int20'
+    data_path = '/home/gao/dataset_loftr/crop/20190313_20190708_int16'
     output_path = '/home/gao/crop_alignment/output'
     source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
 
-    experiment_name = '20190313_20190705_int20'
+    experiment_name = '20190313_20190705_int16'
 
     extractor_matchers = [
-                        ['sift', 'NN-ratio'],
+                        # ['sift', 'NN-ratio'],
                         ['superpoint_max', 'superglue'],
                         [None, 'loftr'],
                         # [None, 'loftr_33_0.4'],
