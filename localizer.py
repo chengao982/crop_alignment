@@ -631,6 +631,14 @@ class CameraLocalization:
         print("inlier_GPS.txt created in .../data/")
 
         return inliers, outliers
+    
+    def filter_transformations_new(self, T, raw_poses, corr_poses, gt_poses):
+        with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
+            for img_name in corr_poses.keys():
+                coords = corr_poses[img_name]
+                img_name = os.path.join(self.images_temp_relative_path, img_name)
+                f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
+        print("inlier_GPS.txt created in .../data/")
 
 
     # Transform raw_poses with different T first. Then compute distances to other transformed points and
@@ -734,7 +742,8 @@ class CameraLocalization:
         self.localize_cameras()
 
         raw_poses, corr_poses, gt_poses, T = self.load_data(self.reconstruction_temp_path, self.output_path, True)
-        inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
+        # inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
+        self.filter_transformations_new(T, raw_poses, corr_poses, gt_poses)
 
         try:
             self.correct_model()
