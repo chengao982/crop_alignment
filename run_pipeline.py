@@ -307,12 +307,12 @@ if __name__ == "__main__":
     # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 
-    pipeline.generate_poses(polygon_corners, minimum_distance)
-    pipeline.build_inital_models()
+    # pipeline.generate_poses(polygon_corners, minimum_distance)
+    # pipeline.build_inital_models()
     pipeline.localize_cameras()
-    pipeline.evalate_reconstruction(translation_error_thres=1.0, 
-                                rotation_error_thres=3.0, 
-                                ground_dist_thres=1.0)
+    # pipeline.evalate_reconstruction(translation_error_thres=1.0, 
+    #                             rotation_error_thres=3.0, 
+    #                             ground_dist_thres=1.0)
     pipeline.evalate_localization(translation_error_thres=1.0,
                                   rotation_error_thres=3.0,
                                   ground_dist_thres=1.0)
