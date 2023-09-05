@@ -660,6 +660,9 @@ class CameraLocalization:
         for i in range(len(distance_mat)):
             dist.append(sum(distance_mat[i]))
         center_idx = dist.index(min(dist))
+        min_idx = sorted(range(len(dist)), key=lambda sub: dist[sub])[:5]
+        min_names = [list(raw_poses.keys())[i] for i in min_idx]
+        print('images with least error', min_names)
         done = False
         num_inliers_threshold = 3
         while done == False:
