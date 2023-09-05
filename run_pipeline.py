@@ -290,7 +290,7 @@ if __name__ == "__main__":
                         # [None, 'loftr_25_0.5_hc'],
                         [None, 'loftr_23_0.5'],
                         [None, 'loftr_23_0.5_hc'],
-                        [None, 'loftr'],
+                        # [None, 'loftr'],
                         ]
 
     pipeline = ReconstructionPipeline(data_path=data_path, 
