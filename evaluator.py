@@ -129,19 +129,19 @@ class Evaluation:
     def plot_camera_error_individual(self, dt, dr, img_list, path):
         error_text = ""
         for id, img in enumerate(img_list):
-            error_text += "Camera " + img + ":\nTranslation Error: " + str(round(dt[id], 5)) + "\nRotation Error: " + \
+            error_text += "Camera " + img + ":\nTranslation Error: " + str(round(dt[id], 3)) + "\nRotation Error: " + \
                         str(round(dr[id], 5)) + "\n\n"
 
-        error_text_summary = "Translation Error mean: " + str(round(np.mean(dt), 5)) + \
-                            "\nTranslation Error std dev: " + str(round(np.std(dt), 5)) + \
-                            "\nTranslation Error median: " + str(round(np.median(dt), 5)) + \
-                            "\nTranslation Error min: " + str(round(np.min(dt), 5)) + \
-                            "\nTranslation Error max: " + str(round(np.max(dt), 5)) + \
-                            "\n\nRotation Error mean: " + str(round(np.mean(dr), 5)) + \
-                            "\nRotation Error std dev: " + str(round(np.std(dr), 5)) + \
-                            "\nRotation Error median: " + str(round(np.median(dr), 5)) + \
-                            "\nRotation Error min: " + str(round(np.min(dr), 5)) + \
-                            "\nRotation Error max: " + str(round(np.max(dr), 5)) + '\n'
+        error_text_summary = "Translation Error mean: " + str(round(np.mean(dt), 3)) + \
+                            "\nTranslation Error std dev: " + str(round(np.std(dt), 3)) + \
+                            "\nTranslation Error median: " + str(round(np.median(dt), 3)) + \
+                            "\nTranslation Error min: " + str(round(np.min(dt), 3)) + \
+                            "\nTranslation Error max: " + str(round(np.max(dt), 3)) + \
+                            "\n\nRotation Error mean: " + str(round(np.mean(dr), 3)) + \
+                            "\nRotation Error std dev: " + str(round(np.std(dr), 3)) + \
+                            "\nRotation Error median: " + str(round(np.median(dr), 3)) + \
+                            "\nRotation Error min: " + str(round(np.min(dr), 3)) + \
+                            "\nRotation Error max: " + str(round(np.max(dr), 3)) + '\n'
         
         error_text += error_text_summary
 
@@ -302,7 +302,7 @@ class Evaluation:
             d = np.cross(vec, normalized)
             dist = np.linalg.norm(d)
             errors.append(dist)
-        # print("Max error of ray to intersection point: " + str(round(max(errors), 5)))
+        # print("Max error of ray to intersection point: " + str(round(max(errors), 3)))
         if max(errors)>0.5 and len(r)>2:
             print("Recomputing ... error over 0.5m")
             max_index = np.argmax(errors)
@@ -364,20 +364,20 @@ class Evaluation:
                             np.power(markers_data[id][2] - markers_ground_truth[id][2], 2))
             error2D_list.append(error2D)
             error3D_list.append(error3D)
-            error_text += "Marker " + str(id) + ":\nError in 3D: " + str(round(error3D, 5)) + "\nError in 2D: " + \
+            error_text += "Marker " + str(id) + ":\nError in 3D: " + str(round(error3D, 3)) + "\nError in 2D: " + \
                         str(round(error2D, 5)) + "\n\n"
             names.append("M" + str(id))
 
-        error_text_summary = "\nError mean 3D: " + str(round(np.mean(error3D_list), 5)) + \
-                            "\nError std dev 3D: " + str(round(np.std(error3D_list), 5)) + \
-                            "\nError median 3D: " + str(round(np.median(error3D_list), 5)) + \
-                            "\nError min 3D: " + str(round(np.min(error3D_list), 5)) + \
-                            "\nError max 3D: " + str(round(np.max(error3D_list), 5)) + \
-                            "\n\nError mean 2D: " + str(round(np.mean(error2D_list), 5)) + \
-                            "\nError std dev 2D: " + str(round(np.std(error2D_list), 5)) + \
-                            "\nError median 2D: " + str(round(np.median(error2D_list), 5)) + \
-                            "\nError min 2D: " + str(round(np.min(error2D_list), 5)) + \
-                            "\nError max 2D: " + str(round(np.max(error2D_list), 5)) + '\n'
+        error_text_summary = "\nError mean 3D: " + str(round(np.mean(error3D_list), 3)) + \
+                            "\nError std dev 3D: " + str(round(np.std(error3D_list), 3)) + \
+                            "\nError median 3D: " + str(round(np.median(error3D_list), 3)) + \
+                            "\nError min 3D: " + str(round(np.min(error3D_list), 3)) + \
+                            "\nError max 3D: " + str(round(np.max(error3D_list), 3)) + \
+                            "\n\nError mean 2D: " + str(round(np.mean(error2D_list), 3)) + \
+                            "\nError std dev 2D: " + str(round(np.std(error2D_list), 3)) + \
+                            "\nError median 2D: " + str(round(np.median(error2D_list), 3)) + \
+                            "\nError min 2D: " + str(round(np.min(error2D_list), 3)) + \
+                            "\nError max 2D: " + str(round(np.max(error2D_list), 3)) + '\n'
         
         print(error_text_summary)
         error_text += error_text_summary
