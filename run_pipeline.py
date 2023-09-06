@@ -266,7 +266,7 @@ class ReconstructionPipeline:
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+    os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
     # data_path = '/Volumes/Plextor/20190313_20190705_int16'
     # output_path = '/Volumes/Plextor/output'
