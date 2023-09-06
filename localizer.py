@@ -301,10 +301,10 @@ class CameraLocalization:
                 if self.plotting:
                     viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                    # if q_id % 8 == 0:
-                    #     visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
-                    #     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    #     plt.close('all')
+                    if q_id % 8 == 0:
+                        visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
+                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                        plt.close('all')
                         # self.color_matches(images, q_path, log, reconstruction)
                         # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
                         # plt.close('all')
@@ -414,10 +414,10 @@ class CameraLocalization:
                 if self.plotting:
                     viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                    # if q_id % 8 == 0:
-                    #     visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
-                    #     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                    #     plt.close('all')
+                    if q_id % 8 == 0:
+                        visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
+                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                        plt.close('all')
                         # self.color_matches(images, q_path, log, reconstruction)
                         # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
                         # plt.close('all')
