@@ -137,7 +137,7 @@ class ReconstructionPipeline:
 
             output_path = os.path.join(self.output_path, identifier, subfolder)
             data_temp_path = os.path.join(self.data_path, subfolder)
-            reconstruction_temp_path = os.path.join(self.initial_models_output_path, subfolder, 'sparse/aligned')
+            reconstruction_temp_path = os.path.join(self.initial_models_output_path, subfolder, 'sparse/0') #aligned
 
             if self.use_previous_as_ref and previous_reconstruction_ref_path is not None:
                 data_ref_path = previous_data_ref_path
@@ -148,8 +148,9 @@ class ReconstructionPipeline:
 
             if idx == 0:
                 if not os.path.isfile(os.path.join(output_path, 'loc_done.txt')):
+                    reconstruction_init_path = os.path.join(self.initial_models_output_path, subfolder, 'sparse/aligned')
                     shutil.rmtree(reconstruction_ref_path, ignore_errors=True) # Remove the existing destination folder if it exists
-                    shutil.copytree(reconstruction_temp_path, reconstruction_ref_path) # Copy the entire folder from source to destination
+                    shutil.copytree(reconstruction_init_path, reconstruction_ref_path) # Copy the entire folder from source to destination
                     # done flag
                     with open(os.path.join(output_path, 'loc_done.txt'), 'w') as f:
                         f.write('done')
