@@ -283,7 +283,7 @@ if __name__ == "__main__":
     experiment_name = '20190313_20190705_int16'
 
     extractor_matchers = [
-                        # ['sift', 'NN-ratio'],
+                        ['sift', 'NN-ratio'],
                         ['superpoint_max', 'superglue'],
                         # [None, 'loftr_33_0.4'],
                         # [None, 'loftr_33_0.4_hc'],
