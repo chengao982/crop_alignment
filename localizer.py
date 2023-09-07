@@ -729,7 +729,7 @@ class CameraLocalization:
         #         else:
         #             done=True
 
-        inliers = min_names
+        inliers = min_idx
 
         if figure is not None:
             for i in inliers:
