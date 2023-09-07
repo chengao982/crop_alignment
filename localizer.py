@@ -668,7 +668,7 @@ class CameraLocalization:
         print(f"Find {len(inliers)}/{len(qvecs)} inliers")
 
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
-            for img_name in inliers.keys():
+            for img_name in inliers:
                 coords = corr_poses[img_name]
                 img_name = os.path.join(self.images_temp_relative_path, img_name)
                 f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
