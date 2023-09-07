@@ -708,6 +708,7 @@ class CameraLocalization:
         a = sorted(range(len(distance_mat[center_idx])), key=lambda sub: distance_mat[center_idx][sub])[:10]
         a_names = [list(raw_poses.keys())[i] for i in a]
         print('images with least error', a_names)
+        outliers = []
         # done = False
         # num_inliers_threshold = 3
         # while done == False:
