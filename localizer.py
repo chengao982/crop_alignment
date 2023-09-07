@@ -528,39 +528,20 @@ class CameraLocalization:
     # Remove cameras with errors bigger than gps noise and then find inliers and outliers according to transformation
     # matrix. Create plots and save validated cameras as file
     def filter_transformations(self, T, raw_poses, corr_poses, gt_poses):
-        with open(self.output_path + '/data/qvec_data.json', "r") as infile:
-            data = []
-            for line in infile:
-                data.append(json.loads(line))
-        qvecs = data[0]
+        # with open(self.output_path + '/data/qvec_data.json', "r") as infile:
+        #     data = []
+        #     for line in infile:
+        #         data.append(json.loads(line))
+        # qvecs = data[0]
 
-        quaternions = np.empty((0, 4), float)
-        for qvec in qvecs.values():
-            quaternions = np.append(quaternions, [qvec], axis=0)
+        # quaternions = np.empty((0, 4), float)
+        # for qvec in qvecs.values():
+        #     quaternions = np.append(quaternions, [qvec], axis=0)
 
-        min_samples = int(len(qvecs) * 0.2)  # Adjust the minimum number of samples in a cluster as needed
-        cluster_inliers = self.cluster_based_outlier_detection(quaternions, min_samples)
-        inliers = [list(qvecs.keys())[i] for i in cluster_inliers]
-        print(f"Find {len(inliers)}/{len(qvecs)} qvec inliers")
-
-        errors_raw, errors_corr = [], []
-        improved_cams = 0
-        corr_poses_filtered, raw_poses_filtered, T_filtered = {}, {}, []
-        for img in corr_poses:
-            corr = corr_poses[img]
-            raw = raw_poses[img]
-            gt = gt_poses[img]
-            errors_raw.append(np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], raw)))
-            corr_error = np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], corr))
-            corr_poses_filtered.update({img: corr_poses[img]})
-            raw_poses_filtered.update({img: raw_poses[img]})
-            T_filtered.append(T[img])
-            if img in inliers:
-                errors_corr.append(corr_error)
-                if errors_raw[-1] > corr_error:
-                    improved_cams += 1
-            else:
-                errors_corr.append(-0.05 * self.gps_noise)
+        # min_samples = int(len(qvecs) * 0.2)  # Adjust the minimum number of samples in a cluster as needed
+        # cluster_inliers = self.cluster_based_outlier_detection(quaternions, min_samples)
+        # inliers = [list(qvecs.keys())[i] for i in cluster_inliers]
+        # print(f"Find {len(inliers)}/{len(qvecs)} qvec inliers")
 
         # errors_raw, errors_corr = [], []
         # improved_cams = 0
@@ -571,7 +552,7 @@ class CameraLocalization:
         #     gt = gt_poses[img]
         #     errors_raw.append(np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], raw)))
         #     corr_error = np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], corr))
-        #     if np.linalg.norm(np.subtract(raw, corr)) < 2*self.gps_noise:
+        #     if img in inliers:
         #         errors_corr.append(corr_error)
         #         corr_poses_filtered.update({img: corr_poses[img]})
         #         raw_poses_filtered.update({img: raw_poses[img]})
@@ -580,6 +561,25 @@ class CameraLocalization:
         #             improved_cams += 1
         #     else:
         #         errors_corr.append(-0.05 * self.gps_noise)
+
+        errors_raw, errors_corr = [], []
+        improved_cams = 0
+        corr_poses_filtered, raw_poses_filtered, T_filtered = {}, {}, []
+        for img in corr_poses:
+            corr = corr_poses[img]
+            raw = raw_poses[img]
+            gt = gt_poses[img]
+            errors_raw.append(np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], raw)))
+            corr_error = np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], corr))
+            if np.linalg.norm(np.subtract(raw, corr)) < 2*self.gps_noise:
+                errors_corr.append(corr_error)
+                corr_poses_filtered.update({img: corr_poses[img]})
+                raw_poses_filtered.update({img: raw_poses[img]})
+                T_filtered.append(T[img])
+                if errors_raw[-1] > corr_error:
+                    improved_cams += 1
+            else:
+                errors_corr.append(-0.05 * self.gps_noise)
 
         errors_corr_to_consider = [a for a in errors_corr if a >= 0.0]
         if not errors_corr_to_consider:
