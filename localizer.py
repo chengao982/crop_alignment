@@ -297,7 +297,7 @@ class CameraLocalization:
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']
                 pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
-                qvecs.update({q: ret['qvec']})
+                qvecs.update({q: ret['qvec'].tolist()})
                 camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
@@ -415,7 +415,7 @@ class CameraLocalization:
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']
                 pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
-                qvecs.update({q: ret['qvec']})
+                qvecs.update({q: ret['qvec'].tolist()})
                 camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
