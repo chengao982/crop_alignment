@@ -703,7 +703,7 @@ class CameraLocalization:
             dist.append(sum(distance_mat[i]))
         # min_names = [list(raw_poses.keys())[i] for i in min_idx]
         # print('images with least error', min_names)
-        num_rows_to_consider = len(distance_mat) // 2
+        num_rows_to_consider = len(distance_mat) // 10
         num_inliers = len(distance_mat) // 10
         min_row_idx = sorted(range(len(dist)), key=lambda sub: dist[sub])[:num_rows_to_consider]
         votes = [0] * len(distance_mat)
@@ -714,6 +714,8 @@ class CameraLocalization:
                 votes[i] += 1
         inliers = sorted(range(len(votes)), key=lambda sub: votes[sub])[:num_inliers]
         outliers = list(set(range(len(distance_mat)))-set(inliers))
+        print('votes', votes)
+        print('inliers', [list(raw_poses.keys())[i] for i in inliers])
         # center_idx = dist.index(min(dist))
         # outliers = []
         # done = False
