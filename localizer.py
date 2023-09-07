@@ -666,7 +666,8 @@ class CameraLocalization:
         #     print("plots created")
 
         # else:
-        inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
+        # inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
+        inliers, outliers = self.compute_inlier(T, raw_poses, corr_poses, self.dist_threshold)
 
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
             for img_name in inliers:
