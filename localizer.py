@@ -740,8 +740,8 @@ class CameraLocalization:
                     x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[o])
                     outl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color='black', marker="+", s=5)
                 plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
-            else:
-                plt.legend((inl), ('inliers'), loc='upper left', fontsize=5)
+            # else:
+            #     plt.legend((inl), ('inliers'), loc='upper left', fontsize=5)
 
             figure.set_xlabel('\n\nX direction', fontsize=9)
             figure.set_ylabel('\n\nY direction', fontsize=9)
