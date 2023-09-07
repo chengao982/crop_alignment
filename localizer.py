@@ -552,11 +552,11 @@ class CameraLocalization:
             gt = gt_poses[img]
             errors_raw.append(np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], raw)))
             corr_error = np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], corr))
+            corr_poses_filtered.update({img: corr_poses[img]})
+            raw_poses_filtered.update({img: raw_poses[img]})
+            T_filtered.append(T[img])
             if img in inliers:
                 errors_corr.append(corr_error)
-                corr_poses_filtered.update({img: corr_poses[img]})
-                raw_poses_filtered.update({img: raw_poses[img]})
-                T_filtered.append(T[img])
                 if errors_raw[-1] > corr_error:
                     improved_cams += 1
             else:
@@ -666,8 +666,7 @@ class CameraLocalization:
         #     print("plots created")
 
         # else:
-        # inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
-        inliers, outliers = self.compute_inlier(T, raw_poses, corr_poses, self.dist_threshold)
+        inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
 
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
             for img_name in inliers:
