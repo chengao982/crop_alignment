@@ -571,7 +571,7 @@ class CameraLocalization:
             gt = gt_poses[img]
             errors_raw.append(np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], raw)))
             corr_error = np.linalg.norm(np.subtract([gt[0], gt[1], gt[2]], corr))
-            if np.linalg.norm(np.subtract(raw, corr)) < 2*self.gps_noise:
+            if np.linalg.norm(np.subtract(raw, corr)) < self.gps_noise:
                 errors_corr.append(corr_error)
                 corr_poses_filtered.update({img: corr_poses[img]})
                 raw_poses_filtered.update({img: raw_poses[img]})
