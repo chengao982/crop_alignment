@@ -166,7 +166,7 @@ class Reconstruction:
 
     # this function runs colmap's model aligner to do the georeferencing and save the model in /model_output
     @staticmethod
-    def align_with_gps(output_dir, model_input, model_output, reference, logname):
+    def align_with_gps(output_dir, model_input, model_output, reference, logname, robust_alignment_max_error=1.0):
         p = os.path.join(output_dir, 'output/colmap')
         if not os.path.exists(p):
             os.makedirs(p)
@@ -185,7 +185,7 @@ class Reconstruction:
             '--ref_is_gps', '0',
             # '--alignment_type', 'ecef',
             '--robust_alignment', '1',
-            '--robust_alignment_max_error', '1.0',
+            '--robust_alignment_max_error', str(robust_alignment_max_error),
         ]
         alignment_output = (subprocess.check_output(alignment_args, universal_newlines=True))
         logfile.write(alignment_output)
