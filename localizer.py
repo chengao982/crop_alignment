@@ -704,26 +704,31 @@ class CameraLocalization:
         center_idx = dist.index(min(dist))
         min_idx = sorted(range(len(dist)), key=lambda sub: dist[sub])[:10]
         min_names = [list(raw_poses.keys())[i] for i in min_idx]
-        print('images with least error', min_names)
-        done = False
-        num_inliers_threshold = 3
-        while done == False:
-            inliers = [center_idx]
-            outliers = []
-            for i in range(len(distance_mat)):
-                if distance_mat[center_idx][i]:
-                    if distance_mat[center_idx][i] < distance_threshold:
-                        inliers.append(i)
-                    else:
-                        outliers.append(i)
-            print(f'distance_threshold: {distance_threshold}, num_inliers: {len(inliers)}')
-            if len(inliers) > num_inliers_threshold:
-                done = True
-            else:
-                if distance_threshold < 1.0:
-                    distance_threshold += 0.05
-                else:
-                    done=True
+        # print('images with least error', min_names)
+        a = sorted(range(len(distance_mat[center_idx])), key=lambda sub: distance_mat[center_idx][sub])[:10]
+        a_names = [list(raw_poses.keys())[i] for i in a]
+        print('images with least error', a_names)
+        # done = False
+        # num_inliers_threshold = 3
+        # while done == False:
+        #     inliers = [center_idx]
+        #     outliers = []
+        #     for i in range(len(distance_mat)):
+        #         if distance_mat[center_idx][i]:
+        #             if distance_mat[center_idx][i] < distance_threshold:
+        #                 inliers.append(i)
+        #             else:
+        #                 outliers.append(i)
+        #     print(f'distance_threshold: {distance_threshold}, num_inliers: {len(inliers)}')
+        #     if len(inliers) > num_inliers_threshold:
+        #         done = True
+        #     else:
+        #         if distance_threshold < 1.0:
+        #             distance_threshold += 0.05
+        #         else:
+        #             done=True
+
+        inliers = min_names
 
         if figure is not None:
             for i in inliers:
