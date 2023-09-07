@@ -766,7 +766,7 @@ class CameraLocalization:
                                     model_output=os.path.join(self.output_path, 'sparse/corrected'), 
                                     reference=os.path.join(self.output_path, 'data/inlier_GPS.txt'), 
                                     logname='correction_output',
-                                    robust_alignment_max_error=2.0)
+                                    robust_alignment_max_error=0.5)
 
     # extract features and localize cameras of temp model in ref model. Then validate the localization and
     # align model with validated cameras
