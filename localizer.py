@@ -8,6 +8,7 @@ import shutil
 import random
 import read_write_model
 import matplotlib.pyplot as plt
+from sklearn.cluster import DBSCAN
 from read_write_model import read_images_binary
 from collections import defaultdict
 from pathlib import Path
@@ -277,6 +278,7 @@ class CameraLocalization:
             'refinement': {'refine_focal_length': False, 'refine_extra_params': False},
         }
 
+        qvecs = {}
         camera_locations_added = {}
         transformations = {}
         localizer = QueryLocalizer(reconstruction, conf)
@@ -290,10 +292,12 @@ class CameraLocalization:
                 q = os.path.basename(q)
                 ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
                 print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+                assert ret["num_inliers"] >= 10, "Find less then 10 inliers"
                 pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']
                 pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
+                qvecs.update({q: ret['qvec']})
                 camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
@@ -301,10 +305,10 @@ class CameraLocalization:
                 if self.plotting:
                     viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                    if q_id % 8 == 0:
-                        visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
-                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                        plt.close('all')
+                    # if q_id % 8 == 0:
+                    #     visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
+                    #     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                    #     plt.close('all')
                         # self.color_matches(images, q_path, log, reconstruction)
                         # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
                         # plt.close('all')
@@ -320,6 +324,8 @@ class CameraLocalization:
                 number_of_inliers = np.append(number_of_inliers, 0.0)
 
         # save data
+        with open(outputs / 'qvec_data.json', 'w') as outfile:
+            json.dump(qvecs, outfile)
         with open(outputs / 'localization_data.json', 'w') as outfile:
             json.dump(camera_locations_added, outfile)
         with open(outputs / 'transformation_data.json', 'w') as outfile:
@@ -390,6 +396,7 @@ class CameraLocalization:
             'refinement': {'refine_focal_length': False, 'refine_extra_params': False},
         }
 
+        qvecs = {}
         camera_locations_added = {}
         transformations = {}
         localizer = QueryLocalizer(reconstruction, conf)
@@ -403,10 +410,12 @@ class CameraLocalization:
                 q = os.path.basename(q)
                 ret, log = self.pose_from_cluster_try(localizer, q_path, camera, ref_ids, features, matches)
                 print(f'{q}: found {ret["num_inliers"]}/{len(ret["inliers"])} inlier correspondences.')
+                assert ret["num_inliers"] >= 10, "Find less then 10 inliers"
                 pose = pycolmap.Image(tvec=ret['tvec'], qvec=ret['qvec'])
                 R = read_write_model.qvec2rotmat(ret['qvec'])
                 Tr = ret['tvec']
                 pos_add = np.matmul(-np.linalg.inv(R), np.array([[Tr[0]], [Tr[1]], [Tr[2]]]))
+                qvecs.update({q: ret['qvec']})
                 camera_locations_added.update({q: [pos_add[0][0], pos_add[1][0], pos_add[2][0]]})
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
@@ -414,10 +423,10 @@ class CameraLocalization:
                 if self.plotting:
                     viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
-                    if q_id % 8 == 0:
-                        visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
-                        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
-                        plt.close('all')
+                    # if q_id % 8 == 0:
+                    #     visualization.visualize_loc_from_log(images, q_path, log, reconstruction)
+                    #     viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+                    #     plt.close('all')
                         # self.color_matches(images, q_path, log, reconstruction)
                         # viz.save_plot(plot_directory + '/' + q + '_color.pdf')
                         # plt.close('all')
@@ -432,6 +441,8 @@ class CameraLocalization:
                 number_of_inliers = np.append(number_of_inliers, 0.0)
 
         # save data
+        with open(outputs / 'qvec_data.json', 'w') as outfile:
+            json.dump(qvecs, outfile)
         with open(outputs / 'localization_data.json', 'w') as outfile:
             json.dump(camera_locations_added, outfile)
         with open(outputs / 'transformation_data.json', 'w') as outfile:
@@ -632,9 +643,32 @@ class CameraLocalization:
 
         return inliers, outliers
     
+    def cluster_based_outlier_detection(self, quaternions, min_samples, eps=0.1):
+        # Use DBSCAN for clustering-based outlier detection
+        X = np.array(quaternions)
+        clustering = DBSCAN(eps=eps, min_samples=min_samples).fit(X)
+        labels = clustering.labels_
+        inliers = [i for i, label in enumerate(labels) if label != -1]
+        return inliers
+
     def filter_transformations_new(self, T, raw_poses, corr_poses, gt_poses):
+        with open(self.output_path + '/data/qvec_data.json', "r") as infile:
+            data = []
+            for line in infile:
+                data.append(json.loads(line))
+        qvecs = data[0]
+
+        quaternions = np.empty((0, 4), float)
+        for qvec in qvecs.values():
+            quaternions = np.append(quaternions, [qvec], axis=0)
+
+        min_samples = int(len(qvecs) * 0.2)  # Adjust the minimum number of samples in a cluster as needed
+        cluster_inliers = self.cluster_based_outlier_detection(quaternions, min_samples)
+        inliers = [list(qvecs.keys())[i] for i in cluster_inliers]
+        print(f"Find {len(inliers)}/{len(qvecs)} inliers")
+
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
-            for img_name in corr_poses.keys():
+            for img_name in inliers.keys():
                 coords = corr_poses[img_name]
                 img_name = os.path.join(self.images_temp_relative_path, img_name)
                 f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')

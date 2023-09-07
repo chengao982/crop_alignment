@@ -266,7 +266,6 @@ class ReconstructionPipeline:
         
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
     # data_path = '/Volumes/Plextor/20190313_20190705_int16'
     # output_path = '/Volumes/Plextor/output'
@@ -282,7 +281,7 @@ if __name__ == "__main__":
     experiment_name = '20190313_20190705_int16'
 
     extractor_matchers = [
-                        ['sift', 'NN-ratio'],
+                        # ['sift', 'NN-ratio'],
                         ['superpoint_max', 'superglue'],
                         # [None, 'loftr_33_0.4'],
                         # [None, 'loftr_33_0.4_hc'],
