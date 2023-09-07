@@ -686,23 +686,23 @@ class CameraLocalization:
         return inliers
 
     def filter_transformations_new(self, T, raw_poses, corr_poses, gt_poses):
-        with open(self.output_path + '/data/qvec_data.json', "r") as infile:
-            data = []
-            for line in infile:
-                data.append(json.loads(line))
-        qvecs = data[0]
+        # with open(self.output_path + '/data/qvec_data.json', "r") as infile:
+        #     data = []
+        #     for line in infile:
+        #         data.append(json.loads(line))
+        # qvecs = data[0]
 
-        quaternions = np.empty((0, 4), float)
-        for qvec in qvecs.values():
-            quaternions = np.append(quaternions, [qvec], axis=0)
+        # quaternions = np.empty((0, 4), float)
+        # for qvec in qvecs.values():
+        #     quaternions = np.append(quaternions, [qvec], axis=0)
 
-        min_samples = int(len(qvecs) * 0.2)  # Adjust the minimum number of samples in a cluster as needed
-        cluster_inliers = self.cluster_based_outlier_detection(quaternions, min_samples)
-        inliers = [list(qvecs.keys())[i] for i in cluster_inliers]
-        print(f"Find {len(inliers)}/{len(qvecs)} inliers")
+        # min_samples = int(len(qvecs) * 0.2)  # Adjust the minimum number of samples in a cluster as needed
+        # cluster_inliers = self.cluster_based_outlier_detection(quaternions, min_samples)
+        # inliers = [list(qvecs.keys())[i] for i in cluster_inliers]
+        # print(f"Find {len(inliers)}/{len(qvecs)} inliers")
 
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
-            for img_name in inliers:
+            for img_name in corr_poses:
                 coords = corr_poses[img_name]
                 img_name = os.path.join(self.images_temp_relative_path, img_name)
                 f.write(img_name + ' ' + str(coords[0]) + ' ' + str(coords[1]) + ' ' + str(coords[2]) + '\n')
@@ -817,11 +817,11 @@ class CameraLocalization:
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
 
-        # self.localize_cameras()
+        self.localize_cameras()
 
         raw_poses, corr_poses, gt_poses, T = self.load_data(self.reconstruction_temp_path, self.output_path, True)
-        inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
-        # self.filter_transformations_new(T, raw_poses, corr_poses, gt_poses)
+        # inlier_list, outlier_list = self.filter_transformations(T, raw_poses, corr_poses, gt_poses)
+        self.filter_transformations_new(T, raw_poses, corr_poses, gt_poses)
 
         try:
             self.correct_model()
