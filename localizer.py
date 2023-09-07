@@ -556,83 +556,83 @@ class CameraLocalization:
                         "\nstd dev: " + str(round(np.std(errors_raw), 5)) + "\nAfter alignment: \nmean: " + \
                         str(round(np.mean(errors_corr_to_consider), 5)) + "\nstd dev: " + str(round(np.std(errors_corr_to_consider), 5))
         print(error_text)
-        if self.plotting:
-            plt.clf()
-            X = np.arange(len(errors_corr))
-            a = plt.bar(X + 0.00, errors_raw, color='b', width=0.25)
-            b = plt.bar(X + 0.25, errors_corr, color='g', width=0.25)
-            plt.legend((a, b), ('error $C_1^r$', 'error $C_1^c$'),
-                    loc='upper right', fontsize=9)
-            plt.xticks(X + 0.125, '', fontsize=9)
-            plt.yticks(fontsize=9)
-            plt.ylabel('Error in m', fontsize=9)
-            plt.ylim([-0.025 * self.gps_noise, 1.5 * self.gps_noise])
-            plt.title('Position errors in camera position')
-            plt.figtext(0.125, 0.05, 'Number of improved cameras: ' + str(improved_cams) + '/' + str(len(errors_corr)))
-            plt.tick_params(axis='x', which='both', bottom=False)
-            plt.savefig(self.output_path + '/data/camera_errors.pdf')
-            plt.clf()
-            plt.close('all')
+        # if self.plotting:
+        #     plt.clf()
+        #     X = np.arange(len(errors_corr))
+        #     a = plt.bar(X + 0.00, errors_raw, color='b', width=0.25)
+        #     b = plt.bar(X + 0.25, errors_corr, color='g', width=0.25)
+        #     plt.legend((a, b), ('error $C_1^r$', 'error $C_1^c$'),
+        #             loc='upper right', fontsize=9)
+        #     plt.xticks(X + 0.125, '', fontsize=9)
+        #     plt.yticks(fontsize=9)
+        #     plt.ylabel('Error in m', fontsize=9)
+        #     plt.ylim([-0.025 * self.gps_noise, 1.5 * self.gps_noise])
+        #     plt.title('Position errors in camera position')
+        #     plt.figtext(0.125, 0.05, 'Number of improved cameras: ' + str(improved_cams) + '/' + str(len(errors_corr)))
+        #     plt.tick_params(axis='x', which='both', bottom=False)
+        #     plt.savefig(self.output_path + '/data/camera_errors.pdf')
+        #     plt.clf()
+        #     plt.close('all')
 
-            fig = plt.figure()
-            ax = fig.add_subplot(projection='3d')
-            inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold, figure=ax)
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot(projection='3d')
+        #     inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold, figure=ax)
 
-            raw_inlier, corr_inlier, gt_inlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)
-            for name in inliers:
-                raw_inlier = np.append(raw_inlier, [raw_poses[name]], axis=0)
-                corr_inlier = np.append(corr_inlier, [corr_poses[name]], axis=0)
-                gt_inlier = np.append(gt_inlier, [[gt_poses[name][0], gt_poses[name][1], gt_poses[name][2]]], axis=0)
+        #     raw_inlier, corr_inlier, gt_inlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)
+        #     for name in inliers:
+        #         raw_inlier = np.append(raw_inlier, [raw_poses[name]], axis=0)
+        #         corr_inlier = np.append(corr_inlier, [corr_poses[name]], axis=0)
+        #         gt_inlier = np.append(gt_inlier, [[gt_poses[name][0], gt_poses[name][1], gt_poses[name][2]]], axis=0)
 
-            raw_outlier, corr_outlier, gt_outlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)
-            for name in outliers:
-                raw_outlier = np.append(raw_outlier, [raw_poses[name]], axis=0)
-                corr_outlier = np.append(corr_outlier, [corr_poses[name]], axis=0)
-                gt_outlier = np.append(gt_outlier, [[gt_poses[name][0], gt_poses[name][1], gt_poses[name][2]]], axis=0)
+        #     raw_outlier, corr_outlier, gt_outlier = np.empty((0, 3), float), np.empty((0, 3), float), np.empty((0, 3), float)
+        #     for name in outliers:
+        #         raw_outlier = np.append(raw_outlier, [raw_poses[name]], axis=0)
+        #         corr_outlier = np.append(corr_outlier, [corr_poses[name]], axis=0)
+        #         gt_outlier = np.append(gt_outlier, [[gt_poses[name][0], gt_poses[name][1], gt_poses[name][2]]], axis=0)
 
-            x_corr_inlier, y_corr_inlier, z_corr_inlier = zip(*corr_inlier)
-            x_gt_inlier, y_gt_inlier, z_gt_inlier = zip(*gt_inlier)
-            x_raw_inlier, y_raw_inlier, z_raw_inlier = zip(*raw_inlier)
-            x_corr_outlier, y_corr_outlier, z_corr_outlier = zip(*corr_outlier)
-            x_gt_outlier, y_gt_outlier, z_gt_outlier = zip(*gt_outlier)
-            x_raw_outlier, y_raw_outlier, z_raw_outlier = zip(*raw_outlier)
+        #     x_corr_inlier, y_corr_inlier, z_corr_inlier = zip(*corr_inlier)
+        #     x_gt_inlier, y_gt_inlier, z_gt_inlier = zip(*gt_inlier)
+        #     x_raw_inlier, y_raw_inlier, z_raw_inlier = zip(*raw_inlier)
+        #     x_corr_outlier, y_corr_outlier, z_corr_outlier = zip(*corr_outlier)
+        #     x_gt_outlier, y_gt_outlier, z_gt_outlier = zip(*gt_outlier)
+        #     x_raw_outlier, y_raw_outlier, z_raw_outlier = zip(*raw_outlier)
 
-            error = []
-            for i in range(len(x_corr_inlier)):
-                error.append(np.sqrt((x_corr_inlier[i] - x_gt_inlier[i]) ** 2 +
-                                    (y_corr_inlier[i] - y_gt_inlier[i]) ** 2 +
-                                    (z_corr_inlier[i] - z_gt_inlier[i]) ** 2))
-            error_text = error_text + "\n\nAfter validation: \nmean: " + str(round(np.mean(error), 5)) + \
-                        "\nstd dev: " + str(round(np.std(error), 5)) + "\nInliers: " + \
-                        str(len(x_corr_inlier)) + "/" + str(len(x_corr_outlier) + len(x_corr_inlier))
+        #     error = []
+        #     for i in range(len(x_corr_inlier)):
+        #         error.append(np.sqrt((x_corr_inlier[i] - x_gt_inlier[i]) ** 2 +
+        #                             (y_corr_inlier[i] - y_gt_inlier[i]) ** 2 +
+        #                             (z_corr_inlier[i] - z_gt_inlier[i]) ** 2))
+        #     error_text = error_text + "\n\nAfter validation: \nmean: " + str(round(np.mean(error), 5)) + \
+        #                 "\nstd dev: " + str(round(np.std(error), 5)) + "\nInliers: " + \
+        #                 str(len(x_corr_inlier)) + "/" + str(len(x_corr_outlier) + len(x_corr_inlier))
 
-            fig = plt.figure()
-            ax = fig.add_subplot(projection='3d')
-            ax.set_xlabel('\n\nX direction', fontsize=9)
-            ax.set_ylabel('\n\nY direction', fontsize=9)
-            ax.set_zlabel('\n\nZ direction', fontsize=9)
-            ax.tick_params(axis='both', which='major', labelsize=7)
-            ax.tick_params(axis='both', which='minor', labelsize=7)
-            ax.xaxis.offsetText.set_fontsize(7)
-            ax.yaxis.offsetText.set_fontsize(7)
-            ax.set_title('Camera poses before and after temporal alignment')
-            ax.scatter(x_raw_outlier, y_raw_outlier, z_raw_outlier, c='red', marker="+")
-            ax.scatter(x_gt_outlier, y_gt_outlier, z_gt_outlier, c='blue', marker="+")
-            ax.scatter(x_corr_outlier, y_corr_outlier, z_corr_outlier, c='green', marker="+")
-            r = ax.scatter(x_raw_inlier, y_raw_inlier, z_raw_inlier, c='red')
-            g = ax.scatter(x_gt_inlier, y_gt_inlier, z_gt_inlier, c='blue')
-            c = ax.scatter(x_corr_inlier, y_corr_inlier, z_corr_inlier, c='green')
-            plt.legend((r, c, g), ('Poses $C_1^r$', 'Poses $C_1^c$', 'Poses $C_1^{gt}$'), loc='upper right', fontsize=9)
-            plt.axis('equal')
-            plt.figtext(0.02, 0.35, error_text, fontsize=9)
-            plt.savefig(self.output_path + '/data/camera_poses.pdf')
-            plt.clf()
-            plt.close('all')
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot(projection='3d')
+        #     ax.set_xlabel('\n\nX direction', fontsize=9)
+        #     ax.set_ylabel('\n\nY direction', fontsize=9)
+        #     ax.set_zlabel('\n\nZ direction', fontsize=9)
+        #     ax.tick_params(axis='both', which='major', labelsize=7)
+        #     ax.tick_params(axis='both', which='minor', labelsize=7)
+        #     ax.xaxis.offsetText.set_fontsize(7)
+        #     ax.yaxis.offsetText.set_fontsize(7)
+        #     ax.set_title('Camera poses before and after temporal alignment')
+        #     ax.scatter(x_raw_outlier, y_raw_outlier, z_raw_outlier, c='red', marker="+")
+        #     ax.scatter(x_gt_outlier, y_gt_outlier, z_gt_outlier, c='blue', marker="+")
+        #     ax.scatter(x_corr_outlier, y_corr_outlier, z_corr_outlier, c='green', marker="+")
+        #     r = ax.scatter(x_raw_inlier, y_raw_inlier, z_raw_inlier, c='red')
+        #     g = ax.scatter(x_gt_inlier, y_gt_inlier, z_gt_inlier, c='blue')
+        #     c = ax.scatter(x_corr_inlier, y_corr_inlier, z_corr_inlier, c='green')
+        #     plt.legend((r, c, g), ('Poses $C_1^r$', 'Poses $C_1^c$', 'Poses $C_1^{gt}$'), loc='upper right', fontsize=9)
+        #     plt.axis('equal')
+        #     plt.figtext(0.02, 0.35, error_text, fontsize=9)
+        #     plt.savefig(self.output_path + '/data/camera_poses.pdf')
+        #     plt.clf()
+        #     plt.close('all')
 
-            print("plots created")
+        #     print("plots created")
 
-        else:
-            inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
+        # else:
+        inliers, outliers = self.compute_inlier(T_filtered, raw_poses_filtered, corr_poses_filtered, self.dist_threshold)
 
         with open(self.output_path + '/data/inlier_GPS.txt', 'w') as f:
             for img_name in inliers:
@@ -735,13 +735,10 @@ class CameraLocalization:
             for i in inliers:
                 x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[i])
                 inl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color=[0.0, 1.0, 0.0], marker="+")
-            if outliers:
-                for o in outliers:
-                    x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[o])
-                    outl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color='black', marker="+", s=5)
-                plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
-            # else:
-            #     plt.legend((inl), ('inliers'), loc='upper left', fontsize=5)
+            for o in outliers:
+                x_trans_list, y_trans_list, z_trans_list = zip(*transformed_points[o])
+                outl = figure.scatter(x_trans_list, y_trans_list, z_trans_list, color='black', marker="+", s=5)
+            plt.legend((inl, outl), ('inliers', 'outliers'), loc='upper left', fontsize=5)
 
             figure.set_xlabel('\n\nX direction', fontsize=9)
             figure.set_ylabel('\n\nY direction', fontsize=9)
