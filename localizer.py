@@ -701,35 +701,40 @@ class CameraLocalization:
         dist = []
         for i in range(len(distance_mat)):
             dist.append(sum(distance_mat[i]))
-        center_idx = dist.index(min(dist))
-        # min_idx = sorted(range(len(dist)), key=lambda sub: dist[sub])[:10]
         # min_names = [list(raw_poses.keys())[i] for i in min_idx]
         # print('images with least error', min_names)
-        a = sorted(range(len(distance_mat[center_idx])), key=lambda sub: distance_mat[center_idx][sub])[:10]
-        a_names = [list(raw_poses.keys())[i] for i in a]
-        print('images with least error', a_names)
-        outliers = []
-        done = False
-        num_inliers_threshold = 3
-        while done == False:
-            inliers = [center_idx]
-            outliers = []
-            for i in range(len(distance_mat)):
-                if distance_mat[center_idx][i]:
-                    if distance_mat[center_idx][i] < distance_threshold:
-                        inliers.append(i)
-                    else:
-                        outliers.append(i)
-            print(f'distance_threshold: {distance_threshold}, num_inliers: {len(inliers)}')
-            if len(inliers) > num_inliers_threshold:
-                done = True
-            else:
-                if distance_threshold < 1.0:
-                    distance_threshold += 0.05
-                else:
-                    done=True
-        print('inliers', [list(raw_poses.keys())[i] for i in inliers])
-        inliers = a
+        num_rows_to_consider = len(distance_mat) // 2
+        num_inliers = len(distance_mat) // 10
+        min_row_idx = sorted(range(len(dist)), key=lambda sub: dist[sub])[:num_rows_to_consider]
+        votes = [0] * len(distance_mat)
+        for row_id in min_row_idx:
+            dist_row = distance_mat[row_id]
+            min_idx = sorted(range(len(dist_row)), key=lambda sub: dist_row[sub])[:num_inliers]
+            for i in min_idx:
+                votes[i] += 1
+        inliers = sorted(range(len(votes)), key=lambda sub: votes[sub])[:num_inliers]
+        outliers = list(set(range(len(distance_mat)))-set(inliers))
+        # center_idx = dist.index(min(dist))
+        # outliers = []
+        # done = False
+        # num_inliers_threshold = 3
+        # while done == False:
+        #     inliers = [center_idx]
+        #     outliers = []
+        #     for i in range(len(distance_mat)):
+        #         if distance_mat[center_idx][i]:
+        #             if distance_mat[center_idx][i] < distance_threshold:
+        #                 inliers.append(i)
+        #             else:
+        #                 outliers.append(i)
+        #     print(f'distance_threshold: {distance_threshold}, num_inliers: {len(inliers)}')
+        #     if len(inliers) > num_inliers_threshold:
+        #         done = True
+        #     else:
+        #         if distance_threshold < 1.0:
+        #             distance_threshold += 0.05
+        #         else:
+        #             done=True
 
         if figure is not None:
             for i in inliers:
