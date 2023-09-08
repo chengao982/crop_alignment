@@ -109,6 +109,7 @@ class ReconstructionPipeline:
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
                                     reconstruction_path=reconstruction_path,
+                                    image_poses_file_name=self.image_poses_file_name,
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
                                     ground_dist_thres=ground_dist_thres)
@@ -242,6 +243,7 @@ class ReconstructionPipeline:
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
                                     reconstruction_path=reconstruction_path,
+                                    image_poses_file_name=self.image_poses_file_name,
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
                                     ground_dist_thres=ground_dist_thres)

@@ -11,7 +11,12 @@ import copy
 from evaluator import Evaluation
 
 class Reconstruction:
-    def __init__(self, data_path, output_path, image_poses_file_name, source_images_path=None, error=0.0):
+    def __init__(self, 
+                 data_path, 
+                 output_path, 
+                 image_poses_file_name, 
+                 source_images_path=None, 
+                 error=0.0):
         self.data_path = data_path
         self.output_path = output_path
         self.image_poses_file_name = image_poses_file_name

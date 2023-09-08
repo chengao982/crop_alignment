@@ -18,6 +18,7 @@ class Evaluation:
                  data_gt_path, 
                  output_path, 
                  reconstruction_path,
+                 image_poses_file_name,
                  translation_error_thres=1,
                  rotation_error_thres=3,
                  ground_dist_thres=0.20
@@ -25,6 +26,7 @@ class Evaluation:
         self.data_gt_path = data_gt_path
         self.output_path = output_path
         self.reconstruction_path = reconstruction_path
+        self.image_poses_file_name = image_poses_file_name
 
         self.translation_error_thres = translation_error_thres
         self.rotation_error_thres = rotation_error_thres
@@ -32,13 +34,13 @@ class Evaluation:
 
         self.images_bin = read_images_binary(os.path.join(reconstruction_path, 'images.bin'))
         self.translation_coords = np.loadtxt(os.path.join(data_gt_path, 'Processed/translation_vector.txt'))
-        self.gt_poses = self.get_gt_poses(self.data_gt_path)
+        self.gt_poses = self.get_gt_poses(self.data_gt_path, self.image_poses_file_name)
         self.aligned_poses = self.get_aligned_poses(self.reconstruction_path)
 
     # get the gt poses (tvec & qvec) of the cameras
     @staticmethod
-    def get_gt_poses(data_gt_path):
-        file_name = os.path.join(data_gt_path, 'Processed/image_poses.txt')
+    def get_gt_poses(data_gt_path, image_poses_file_name):
+        file_name = os.path.join(data_gt_path, 'Processed', image_poses_file_name)
         gt_poses = {}
         with open(file_name) as f:
             lines = f.readlines()[1:]
