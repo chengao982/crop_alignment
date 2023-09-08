@@ -274,11 +274,11 @@ if __name__ == "__main__":
     # output_path = '/home/gao/crop_alignment/output'
     # source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
 
-    data_path = '/home/gao/dataset_loftr/crop/20190313_20190708_int20'
+    data_path = '/home/gao/dataset_loftr/crop/20190313_20190705_int10'
     output_path = '/home/gao/crop_alignment/output'
     source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
 
-    experiment_name = '20190313_20190708_int20'
+    experiment_name = '20190313_20190705_int10'
 
     extractor_matchers = [
                         ['sift', 'NN-ratio'],
