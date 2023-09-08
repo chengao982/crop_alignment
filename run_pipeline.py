@@ -12,6 +12,7 @@ class ReconstructionPipeline:
                  data_path, 
                  output_path, 
                  source_images_path, 
+                 image_poses_file_name, 
                  experiment_name, 
                  extractor_matchers,
                  gps_error=5.0, 
@@ -22,6 +23,7 @@ class ReconstructionPipeline:
         self.data_path = data_path
         self.output_path = os.path.join(output_path, experiment_name)
         self.source_images_path = source_images_path
+        self.image_poses_file_name = image_poses_file_name
         self.initial_models_output_path = os.path.join(self.output_path, 'initial_models')
         self.extractor_matchers = extractor_matchers
         self.plot = True
@@ -45,7 +47,7 @@ class ReconstructionPipeline:
             print('--------------------Pose File Generation--------------------')
             print(f"Generating image_poses.txt for subfolder {subfolder}\n")
 
-            generator = ImagePoseGenerator(os.path.join(self.data_path, subfolder), 'image_poses.txt')
+            generator = ImagePoseGenerator(os.path.join(self.data_path, subfolder), self.image_poses_file_name)
             generator.process_camera_poses(polygon_corners, distance_threshold=minimum_distance)
 
         print('====================Pose File Generation Done====================\n')
@@ -67,6 +69,7 @@ class ReconstructionPipeline:
                     reconstructor = Reconstruction(data_path=data_path, 
                                                 output_path=output_path, 
                                                 source_images_path=source_images_path,
+                                                image_poses_file_name=self.image_poses_file_name,
                                                 error=0.0)
                     reconstructor.run()
 
@@ -75,6 +78,7 @@ class ReconstructionPipeline:
                     reconstructor = Reconstruction(data_path=data_path, 
                                                 output_path=output_path, 
                                                 source_images_path=source_images_path,
+                                                image_poses_file_name=self.image_poses_file_name,
                                                 error=self.gps_error)
                     reconstructor.run()
 
@@ -274,11 +278,13 @@ if __name__ == "__main__":
     # output_path = '/home/gao/crop_alignment/output'
     # source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
 
-    data_path = '/home/gao/dataset_loftr/crop/20190313_20190705_int10'
+    data_path = '/home/gao/dataset_loftr/crop/20190313_20190708_int20'
     output_path = '/home/gao/crop_alignment/output'
     source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
 
-    experiment_name = '20190313_20190705_int10'
+    experiment_name = '20190313_20190708_int20'
+
+    image_poses_file_name = 'image_poses_tight.txt'
 
     extractor_matchers = [
                         ['sift', 'NN-ratio'],
@@ -295,6 +301,7 @@ if __name__ == "__main__":
     pipeline = ReconstructionPipeline(data_path=data_path, 
                                       output_path=output_path, 
                                       source_images_path=source_images_path,
+                                      image_poses_file_name=image_poses_file_name,
                                       experiment_name=experiment_name, 
                                       extractor_matchers=extractor_matchers,
                                       use_previous_as_ref=True
@@ -302,7 +309,8 @@ if __name__ == "__main__":
     
     #RB, RT, LT, LB, covering the central field
     # polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] # 2018
-    polygon_corners = [(95.2749,4.1106), (119.8873,36.7558), (83.6157,65.8016), (59.0033,33.1364)] # 2019
+    # polygon_corners = [(95.2749,4.1106), (119.8873,36.7558), (83.6157,65.8016), (59.0033,33.1364)] # 2019
+    polygon_corners = [(91.7206,9.5767), (113.6489,38.3808), (83.6796,62.1366), (62.0337,34.1231)] # 2019 tight
     # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 

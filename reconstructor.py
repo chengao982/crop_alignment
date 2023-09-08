@@ -11,9 +11,10 @@ import copy
 from evaluator import Evaluation
 
 class Reconstruction:
-    def __init__(self, data_path, output_path, source_images_path=None, error=0.0):
+    def __init__(self, data_path, output_path, image_poses_file_name, source_images_path=None, error=0.0):
         self.data_path = data_path
         self.output_path = output_path
+        self.image_poses_file_name = image_poses_file_name
         self.source_images_path = source_images_path
         self.output_model_name = 'sparse/aligned'
 
@@ -62,7 +63,7 @@ class Reconstruction:
 
     # get camera positions from file
     def get_gps_poses(self, add_noise=False):
-        file_name = os.path.join(self.data_path, 'Processed/image_poses.txt')
+        file_name = os.path.join(self.data_path, 'Processed', self.image_poses_file_name)
         with open(file_name) as f:
             lines = f.readlines()[1:]
         for line in lines:
