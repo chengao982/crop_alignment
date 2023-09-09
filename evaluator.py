@@ -566,6 +566,13 @@ class Evaluation:
                              error3D_list, error2D_list, marker_list)
         self.convert_to_txt()
 
+        dt_mean = np.mean(dt_list)
+        dr_mean = np.mean(dr_list)
+        error3D_mean = np.mean(error3D_list)
+        error2D_mean = np.mean(error2D_list)
+
+        return dt_mean, dr_mean, error3D_mean, error2D_mean
+
     def get_localized_poses(self):
         with open(self.output_path + '/data/localization_data.json', "r") as infile:
             data = []
