@@ -21,8 +21,7 @@ class ReconstructionPipeline:
         self.output_path = os.path.join(output_path, experiment_name)
         self.source_images_path = source_images_path
         self.image_poses_file_name = image_poses_file_name
-        self.gt_models_output_path = os.path.join(self.output_path, 'gt_models')
-        self.noisy_models_output_path = os.path.join(self.output_path, 'noisy_models')
+        self.initial_models_output_path = os.path.join(self.output_path, 'initial_models')
         self.gps_error = gps_error
         subfolders = next(os.walk(self.data_path))[1]
         self.subfolders = sorted(subfolders)
@@ -46,69 +45,29 @@ class ReconstructionPipeline:
 
         print('====================Pose File Generation Done====================\n')
 
-    def build_gt_models(self):
+    def build_models(self):
         for idx, subfolder in enumerate(self.subfolders):
             start_time = time.time()
-            print('--------------------GT Reconstruction--------------------')
-            print(f"Running intial reconstruction for subfolder {subfolder}...\n")
-            
-            output_path = os.path.join(self.gt_models_output_path, subfolder)
-            data_path = os.path.join(self.data_path, subfolder)
-            source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
-
-            if not os.path.isfile(os.path.join(output_path, 'rec_done.txt')):
-                print(f"Running reconstructor ground truth model {idx} ...\n")
-                reconstructor = Reconstruction(data_path=data_path, 
-                                            output_path=output_path, 
-                                            source_images_path=source_images_path,
-                                            image_poses_file_name=self.image_poses_file_name,
-                                            error=0.0)
-                reconstructor.run()
-
-                # done flag
-                with open(os.path.join(output_path, 'rec_done.txt'), 'w') as f:
-                    f.write('done')
-
-            else:
-                print(f'GT model of {subfolder} already exists\n')
-
-            end_time = time.time()
-            run_time = end_time - start_time
-            print(f"GT Reconstruction Runtime for {subfolder}: {run_time}\n")
-
-        print('====================GT Reconstruction Done====================\n')
-
-    def build_noisy_models(self):
-        for idx, subfolder in enumerate(self.subfolders):
-            start_time = time.time()
-            print('-------------------- Noisy Reconstruction--------------------')
+            print('--------------------Initial Reconstruction--------------------')
             print(f"Running intial reconstruction for subfolder {subfolder}...\n")
             
             output_path = os.path.join(self.noisy_models_output_path, subfolder)
             data_path = os.path.join(self.data_path, subfolder)
             source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
 
-            if not os.path.isfile(os.path.join(output_path, 'rec_done.txt')):
-                print(f"Running reconstructor temporal model {idx} ...\n")
-                reconstructor = Reconstruction(data_path=data_path, 
-                                            output_path=output_path, 
-                                            source_images_path=source_images_path,
-                                            image_poses_file_name=self.image_poses_file_name,
-                                            error=self.gps_error)
-                reconstructor.run()
-
-                # done flag
-                with open(os.path.join(output_path, 'rec_done.txt'), 'w') as f:
-                    f.write('done')
-
-            else:
-                print(f'Noisy model of {subfolder} already exists\n')
+            print(f"Running reconstructor temporal model {idx} ...\n")
+            reconstructor = Reconstruction(data_path=data_path, 
+                                        output_path=output_path, 
+                                        source_images_path=source_images_path,
+                                        image_poses_file_name=self.image_poses_file_name,
+                                        error=self.gps_error)
+            reconstructor.run()
 
             end_time = time.time()
             run_time = end_time - start_time
             print(f"Noisy Reconstruction Runtime for {subfolder}: {run_time}\n")
 
-        print('====================Noisy Reconstruction Done====================\n')
+        print('====================Initial Reconstruction Done====================\n')
 
     def evalate_reconstruction(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
         for subfolder in self.subfolders:
@@ -116,14 +75,22 @@ class ReconstructionPipeline:
             print('-----------------Reconstruction Evaluation-----------------')
             print(f"Running evaulation for subfolder {subfolder}...")
 
-            output_path = os.path.join(self.gt_models_output_path, subfolder)
+            output_path = os.path.join(self.initial_models_output_path, subfolder)
             data_gt_path = os.path.join(self.data_path, subfolder)
-            reconstruction_path = os.path.join(output_path, 'sparse/aligned')
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
                 evaluator = Evaluation(data_gt_path=data_gt_path,
                                     output_path=output_path,
-                                    reconstruction_path=reconstruction_path,
+                                    reconstruction_path=os.path.join(output_path, 'sparse/gt'),
+                                    image_poses_file_name=self.image_poses_file_name,
+                                    translation_error_thres=translation_error_thres,
+                                    rotation_error_thres=rotation_error_thres,
+                                    ground_dist_thres=ground_dist_thres)
+                evaluator.run()
+
+                evaluator = Evaluation(data_gt_path=data_gt_path,
+                                    output_path=output_path,
+                                    reconstruction_path=os.path.join(output_path, 'sparse/noisy'),
                                     image_poses_file_name=self.image_poses_file_name,
                                     translation_error_thres=translation_error_thres,
                                     rotation_error_thres=rotation_error_thres,
@@ -135,28 +102,6 @@ class ReconstructionPipeline:
                     f.write('done')
             else:
                 print(f'Evaluation for {subfolder} has already been done\n')
-
-
-
-            output_path = os.path.join(self.noisy_models_output_path, subfolder)
-
-            if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
-                evaluator = Evaluation(data_gt_path=data_gt_path,
-                                    output_path=output_path,
-                                    reconstruction_path=reconstruction_path,
-                                    image_poses_file_name=self.image_poses_file_name,
-                                    translation_error_thres=translation_error_thres,
-                                    rotation_error_thres=rotation_error_thres,
-                                    ground_dist_thres=ground_dist_thres)
-                evaluator.run()
-
-                # done flag
-                with open(os.path.join(output_path, 'eval_done.txt'), 'w') as f:
-                    f.write('done')
-            else:
-                print(f'Evaluation for {subfolder} has already been done\n')
-
-
 
             end_time = time.time()
             run_time = end_time - start_time
@@ -198,8 +143,7 @@ if __name__ == "__main__":
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 
     pipeline.generate_poses(polygon_corners, minimum_distance)
-    pipeline.build_gt_models()
-    pipeline.build_noisy_models()
+    pipeline.build_models()
     pipeline.evalate_reconstruction(translation_error_thres=1.0, 
                                 rotation_error_thres=3.0, 
                                 ground_dist_thres=1.0)

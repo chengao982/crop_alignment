@@ -159,8 +159,8 @@ class Reconstruction:
 
         print('Finished running COLMAP, see {} for logs'.format(logfile_name))
 
-    def write_gps_poses(self, poses):
-        with open(self.noisy_gps_file, 'w') as f:
+    def write_gps_poses(self, poses, gps_file):
+        with open(gps_file, 'w') as f:
             for img_name in poses.keys():
                 try:
                     coords = poses[img_name]
@@ -278,7 +278,7 @@ class Reconstruction:
         self.get_gps_poses(add_noise=True)
         self.create_symbolic_links(self.gt_poses)
         self.create_sparse_map('exhaustive_matcher')
-        self.write_gps_poses(self.noisy_poses)
+        self.write_gps_poses(self.noisy_poses, self.noisy_gps_file)
         self.align_with_gps(output_dir=self.output_path,
                             model_input=os.path.join(self.output_path, 'sparse/0'), 
                             model_output=os.path.join(self.output_path, self.output_model_name), 
@@ -288,6 +288,40 @@ class Reconstruction:
         # self.reconstructed_poses = self.get_camera_poses(self.output_model_name)
         # data_poses, gt_poses, error_text = self.reconstruction_processing(self.reconstructed_poses, self.gt_poses)
         # self.plot_coords(data_poses, gt_poses, error_text)
+
+    def build_models(self):
+        if (not os.path.isfile(os.path.join(self.output_path, 'rec_gt_done.txt'))) \
+            and (not os.path.isfile(os.path.join(self.output_path, 'rec_noisy_done.txt'))):
+            self.get_gps_poses(add_noise=False)
+            self.create_symbolic_links(self.gt_poses)
+            self.create_sparse_map('exhaustive_matcher')
+
+        if not os.path.isfile(os.path.join(self.output_path, 'rec_gt_done.txt')):
+            self.get_gps_poses(add_noise=False)
+            gps_file = os.path.join(self.output_path, 'output/camera_GPS_gt.txt')
+            self.write_gps_poses(self.noisy_poses, gps_file)
+            self.align_with_gps(output_dir=self.output_path,
+                                model_input=os.path.join(self.output_path, 'sparse/0'), 
+                                model_output=os.path.join(self.output_path, 'sparse/gt'), 
+                                reference=gps_file, 
+                                logname='alignment_output')
+            
+            with open(os.path.join(output_path, 'rec_gt_done.txt'), 'w') as f:
+                f.write('done')
+
+        if not os.path.isfile(os.path.join(self.output_path, 'rec_noisy_done.txt')):
+            self.get_gps_poses(add_noise=True)
+            gps_file = os.path.join(self.output_path, 'output/camera_GPS_noisy.txt')
+            self.write_gps_poses(self.noisy_poses, gps_file)
+            self.align_with_gps(output_dir=self.output_path,
+                                model_input=os.path.join(self.output_path, 'sparse/0'), 
+                                model_output=os.path.join(self.output_path, 'sparse/noisy'), 
+                                reference=gps_file, 
+                                logname='alignment_output')
+            
+            with open(os.path.join(output_path, 'rec_noisy_done.txt'), 'w') as f:
+                f.write('done')
+
 
 if __name__ == "__main__":
     start_time = time.time()
