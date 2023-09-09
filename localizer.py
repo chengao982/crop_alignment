@@ -29,6 +29,7 @@ class CameraLocalization:
                  images_temp_path, 
                  reconstruction_ref_path, 
                  reconstruction_temp_path, 
+                 image_poses_file_name, 
                  extractor, 
                  matcher,
                  plotting=False,
@@ -40,6 +41,7 @@ class CameraLocalization:
         self.images_temp_path = images_temp_path
         self.reconstruction_ref_path = reconstruction_ref_path
         self.reconstruction_temp_path = reconstruction_temp_path
+        self.image_poses_file_name = image_poses_file_name, 
         self.plotting = plotting
         self.gps_noise = gps_noise
         self.dist_threshold = dist_threshold
@@ -488,7 +490,7 @@ class CameraLocalization:
                 data.append(json.loads(line))
         corr_poses = data[0]
 
-        ground_truth = Evaluation.get_gt_poses(os.path.dirname(self.images_temp_path))
+        ground_truth = Evaluation.get_gt_poses(os.path.dirname(self.images_temp_path), self.image_poses_file_name)
 
         if transformation_bool == True:
             with open(corrected_path + '/data/transformation_data.json', "r") as infile:

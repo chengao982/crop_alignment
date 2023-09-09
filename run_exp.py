@@ -182,6 +182,7 @@ class ReconstructionPipeline:
                                         images_temp_path=os.path.join(data_temp_path, 'images4reconstruction'),
                                         reconstruction_ref_path=reconstruction_ref_path,
                                         reconstruction_temp_path=reconstruction_temp_path,
+                                        image_poses_file_name=self.image_poses_file_name,
                                         extractor=extractor,
                                         matcher=matcher,
                                         gps_noise=self.gps_error,
