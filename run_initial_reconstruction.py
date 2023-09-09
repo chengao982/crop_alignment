@@ -51,7 +51,7 @@ class ReconstructionPipeline:
             print('--------------------Initial Reconstruction--------------------')
             print(f"Running intial reconstruction for subfolder {subfolder}...\n")
             
-            output_path = os.path.join(self.noisy_models_output_path, subfolder)
+            output_path = os.path.join(self.initial_models_output_path, subfolder)
             data_path = os.path.join(self.data_path, subfolder)
             source_images_path = os.path.join(self.source_images_path, subfolder, 'RAW/JPEG')
 
