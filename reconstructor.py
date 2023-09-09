@@ -290,9 +290,9 @@ class Reconstruction:
         # self.plot_coords(data_poses, gt_poses, error_text)
 
     def build_models(self):
+        self.get_gps_poses(add_noise=False)
+        self.create_symbolic_links(self.gt_poses)
         if not os.path.isdir(os.path.join(self.output_path, 'sparse/0')):
-            self.get_gps_poses(add_noise=False)
-            self.create_symbolic_links(self.gt_poses)
             self.create_sparse_map('exhaustive_matcher')
 
         if not os.path.isfile(os.path.join(self.output_path, 'rec_gt_done.txt')):
