@@ -285,9 +285,9 @@ class Reconstruction:
                             reference=self.noisy_gps_file, 
                             logname='alignment_output')
     
-        self.reconstructed_poses = self.get_camera_poses(self.output_model_name)
-        data_poses, gt_poses, error_text = self.reconstruction_processing(self.reconstructed_poses, self.gt_poses)
-        self.plot_coords(data_poses, gt_poses, error_text)
+        # self.reconstructed_poses = self.get_camera_poses(self.output_model_name)
+        # data_poses, gt_poses, error_text = self.reconstruction_processing(self.reconstructed_poses, self.gt_poses)
+        # self.plot_coords(data_poses, gt_poses, error_text)
 
 if __name__ == "__main__":
     start_time = time.time()
