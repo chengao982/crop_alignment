@@ -61,7 +61,7 @@ class ReconstructionPipeline:
                                         source_images_path=source_images_path,
                                         image_poses_file_name=self.image_poses_file_name,
                                         error=self.gps_error)
-            reconstructor.run()
+            reconstructor.build_models()
 
             end_time = time.time()
             run_time = end_time - start_time
@@ -80,7 +80,7 @@ class ReconstructionPipeline:
 
             if not os.path.isfile(os.path.join(output_path, 'eval_done.txt')):
                 evaluator = Evaluation(data_gt_path=data_gt_path,
-                                    output_path=output_path,
+                                    output_path=os.path.join(output_path, 'eval/gt'),
                                     reconstruction_path=os.path.join(output_path, 'sparse/gt'),
                                     image_poses_file_name=self.image_poses_file_name,
                                     translation_error_thres=translation_error_thres,
@@ -89,7 +89,7 @@ class ReconstructionPipeline:
                 evaluator.run()
 
                 evaluator = Evaluation(data_gt_path=data_gt_path,
-                                    output_path=output_path,
+                                    output_path=os.path.join(output_path, 'eval/noisy'),
                                     reconstruction_path=os.path.join(output_path, 'sparse/noisy'),
                                     image_poses_file_name=self.image_poses_file_name,
                                     translation_error_thres=translation_error_thres,
