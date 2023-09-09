@@ -290,8 +290,7 @@ class Reconstruction:
         # self.plot_coords(data_poses, gt_poses, error_text)
 
     def build_models(self):
-        if (not os.path.isfile(os.path.join(self.output_path, 'rec_gt_done.txt'))) \
-            and (not os.path.isfile(os.path.join(self.output_path, 'rec_noisy_done.txt'))):
+        if not os.path.isdir(os.path.join(self.output_path, 'sparse/0')):
             self.get_gps_poses(add_noise=False)
             self.create_symbolic_links(self.gt_poses)
             self.create_sparse_map('exhaustive_matcher')
@@ -306,7 +305,7 @@ class Reconstruction:
                                 reference=gps_file, 
                                 logname='alignment_output')
             
-            with open(os.path.join(output_path, 'rec_gt_done.txt'), 'w') as f:
+            with open(os.path.join(self.output_path, 'rec_gt_done.txt'), 'w') as f:
                 f.write('done')
 
         if not os.path.isfile(os.path.join(self.output_path, 'rec_noisy_done.txt')):
@@ -319,7 +318,7 @@ class Reconstruction:
                                 reference=gps_file, 
                                 logname='alignment_output')
             
-            with open(os.path.join(output_path, 'rec_noisy_done.txt'), 'w') as f:
+            with open(os.path.join(self.output_path, 'rec_noisy_done.txt'), 'w') as f:
                 f.write('done')
 
 
