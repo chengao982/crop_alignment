@@ -206,6 +206,35 @@ class ReconstructionPipeline:
 
         return not os.path.isfile(os.path.join(output_path, 'loc_failed.txt'))
 
+    def _evalate_localization(self, extractor, matcher, ref_bin_idx, query_folder,
+                              translation_error_thres, rotation_error_thres, ground_dist_thres):
+        
+        identifier = extractor if extractor else matcher
+
+        start_time = time.time()
+
+        output_path = os.path.join(self.output_path, identifier, str(ref_bin_idx), query_folder)
+        data_gt_path = os.path.join(self.data_path, query_folder)
+        reconstruction_path = os.path.join(output_path, 'sparse/corrected')
+
+        print('-----------------corrected_model-----------------')
+        evaluator = Evaluation(data_gt_path=data_gt_path,
+                            output_path=output_path,
+                            reconstruction_path=reconstruction_path,
+                            image_poses_file_name=self.image_poses_file_name,
+                            translation_error_thres=translation_error_thres,
+                            rotation_error_thres=rotation_error_thres,
+                            ground_dist_thres=ground_dist_thres)
+        dt_mean, dr_mean, error3D_mean, error2D_mean = evaluator.run()
+
+        print('----------------localized_poses------------------')
+        evaluator.run_localized()
+
+        end_time = time.time()
+        run_time = end_time - start_time
+        print(f"Evaulation Runtime: {run_time}\n")
+
+        return dt_mean, dr_mean, error3D_mean, error2D_mean
 
     def localize_cameras(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
         for extractor_matcher in self.extractor_matchers:
@@ -257,37 +286,6 @@ class ReconstructionPipeline:
                             self.output_df_dict[name][identifier, ref_bin_idx] = pd.NA
 
                 print(f'==========Finished localization for reference bin #{ref_bin_idx}==========\n')
-
-    def _evalate_localization(self, extractor, matcher, ref_bin_idx, query_folder,
-                              translation_error_thres, rotation_error_thres, ground_dist_thres):
-        
-        identifier = extractor if extractor else matcher
-
-        start_time = time.time()
-
-        output_path = os.path.join(self.output_path, identifier, str(ref_bin_idx), query_folder)
-        data_gt_path = os.path.join(self.data_path, query_folder)
-        reconstruction_path = os.path.join(output_path, 'sparse/corrected')
-
-        print('-----------------corrected_model-----------------')
-        evaluator = Evaluation(data_gt_path=data_gt_path,
-                            output_path=output_path,
-                            reconstruction_path=reconstruction_path,
-                            image_poses_file_name=self.image_poses_file_name,
-                            translation_error_thres=translation_error_thres,
-                            rotation_error_thres=rotation_error_thres,
-                            ground_dist_thres=ground_dist_thres)
-        dt_mean, dr_mean, error3D_mean, error2D_mean = evaluator.run()
-
-        print('----------------localized_poses------------------')
-        evaluator.run_localized()
-
-        end_time = time.time()
-        run_time = end_time - start_time
-        print(f"Evaulation Runtime: {run_time}\n")
-
-        return dt_mean, dr_mean, error3D_mean, error2D_mean
-
 
     # def evalate_localization(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
     #     for extractor_matcher in self.extractor_matchers:
