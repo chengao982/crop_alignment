@@ -41,7 +41,7 @@ class CameraLocalization:
         self.images_temp_path = images_temp_path
         self.reconstruction_ref_path = reconstruction_ref_path
         self.reconstruction_temp_path = reconstruction_temp_path
-        self.image_poses_file_name = image_poses_file_name, 
+        self.image_poses_file_name = image_poses_file_name
         self.plotting = plotting
         self.gps_noise = gps_noise
         self.dist_threshold = dist_threshold
