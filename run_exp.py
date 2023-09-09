@@ -209,9 +209,9 @@ class ReconstructionPipeline:
 
     def localize_cameras(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
         for extractor_matcher in self.extractor_matchers:
-            print(f'==========Start localization with {extractor} / {matcher}==========\n')
             extractor, matcher = extractor_matcher
             identifier = extractor if extractor else matcher
+            print(f'==========Start localization with {extractor} / {matcher}==========\n')
 
             for ref_bin_idx in range(self.num_ref_bins):
                 print(f'==========Start localization for reference bin #{ref_bin_idx}==========\n')
