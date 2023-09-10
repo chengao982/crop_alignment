@@ -293,18 +293,18 @@ class ReconstructionPipeline:
                             for name in alg_output_df_dict.keys():
                                 alg_output_df_dict[name].loc[query_folder, ref_bin_idx] = pd.NA
                     
-                    if all_queries_sussessful:
-                        self.output_df_dict['dt_mean'].loc[identifier, ref_bin_idx] = np.mean(dt)
-                        self.output_df_dict['dt_std'].loc[identifier, ref_bin_idx] = np.std(dt)
-                        self.output_df_dict['dr_mean'].loc[identifier, ref_bin_idx] = np.mean(dr)
-                        self.output_df_dict['dr_std'].loc[identifier, ref_bin_idx] = np.std(dr)
-                        self.output_df_dict['error3D_mean'].loc[identifier, ref_bin_idx] = np.mean(error3D)
-                        self.output_df_dict['error3D_std'].loc[identifier, ref_bin_idx] = np.std(error3D)
-                        self.output_df_dict['error2D_mean'].loc[identifier, ref_bin_idx] = np.mean(error2D)
-                        self.output_df_dict['error2D_std'].loc[identifier, ref_bin_idx] = np.std(error2D)
-                    else:
-                        for name in self.output_df_dict.keys():
-                            self.output_df_dict[name].loc[identifier, ref_bin_idx] = pd.NA
+                if all_queries_sussessful:
+                    self.output_df_dict['dt_mean'].loc[identifier, ref_bin_idx] = np.mean(dt)
+                    self.output_df_dict['dt_std'].loc[identifier, ref_bin_idx] = np.std(dt)
+                    self.output_df_dict['dr_mean'].loc[identifier, ref_bin_idx] = np.mean(dr)
+                    self.output_df_dict['dr_std'].loc[identifier, ref_bin_idx] = np.std(dr)
+                    self.output_df_dict['error3D_mean'].loc[identifier, ref_bin_idx] = np.mean(error3D)
+                    self.output_df_dict['error3D_std'].loc[identifier, ref_bin_idx] = np.std(error3D)
+                    self.output_df_dict['error2D_mean'].loc[identifier, ref_bin_idx] = np.mean(error2D)
+                    self.output_df_dict['error2D_std'].loc[identifier, ref_bin_idx] = np.std(error2D)
+                else:
+                    for name in self.output_df_dict.keys():
+                        self.output_df_dict[name].loc[identifier, ref_bin_idx] = pd.NA
 
                 self.save_output_df(alg_output_df_dict, os.path.join(self.output_path, identifier, 'alg_eval.xlsx'))
                 print(f'==========Finished localization for reference bin #{ref_bin_idx}==========\n')
