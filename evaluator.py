@@ -564,7 +564,7 @@ class Evaluation:
                              dt_list, dr_list, img_list, 
                              markers_gps_pos, markers_reconstruction,
                              error3D_list, error2D_list, marker_list)
-        self.convert_to_txt()
+        # self.convert_to_txt()
 
         output_dict = {
             'dt_mean': np.mean(dt_list),
