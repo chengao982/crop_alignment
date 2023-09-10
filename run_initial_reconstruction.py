@@ -65,7 +65,7 @@ class ReconstructionPipeline:
 
             end_time = time.time()
             run_time = end_time - start_time
-            print(f"Noisy Reconstruction Runtime for {subfolder}: {run_time}\n")
+            print(f"Reconstruction Runtime for {subfolder}: {run_time}\n")
 
         print('====================Initial Reconstruction Done====================\n')
 

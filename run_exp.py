@@ -42,13 +42,20 @@ class ReconstructionPipeline:
         self.query_list = list(pairs_dict.keys())
         self.num_ref_bins = len(pairs_dict[self.query_list[0]])
 
-        self.output_df_dict = self.create_output_df()
+        self.output_df_dict = self.create_output_df(row_names='alg', col_names='ref')
 
 
-    def create_output_df(self):
-        row_names = [extractor if extractor else matcher for (extractor, matcher) in self.extractor_matchers]
-        col_names = list(range(self.num_ref_bins))
-        template_df = pd.DataFrame(index=row_names, columns=col_names)
+    def create_output_df(self, row_names, col_names):
+        # row_names = [extractor if extractor else matcher for (extractor, matcher) in self.extractor_matchers]
+        # col_names = list(range(self.num_ref_bins))
+
+        names_dict = {
+            'alg': [extractor if extractor else matcher for (extractor, matcher) in self.extractor_matchers],
+            'ref': list(range(self.num_ref_bins)),
+            'query': self.query_list
+        }
+
+        template_df = pd.DataFrame(index=names_dict[row_names], columns=names_dict[col_names])
 
         df_names = ['dt_mean', 'dt_std', 'dr_mean', 'dr_std', 'error3D_mean', 'error3D_std', 'error2D_mean', 'error2D_std']
         df_dict = {}
@@ -58,12 +65,12 @@ class ReconstructionPipeline:
             df_dict[name] = template_copy
 
         return df_dict
-    
-    def save_output_df(self, output_df_name='output_df.xlsx'):
+        
+    def save_output_df(self, output_df_dict, output_df_name):
         # Create a Pandas Excel writer object
         with pd.ExcelWriter(output_df_name, engine='xlsxwriter') as writer:
             # Loop through the dictionary and write each DataFrame to a separate sheet
-            for sheet_name, df in self.output_df_dict.items():
+            for sheet_name, df in output_df_dict.items():
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
 
 
@@ -241,6 +248,8 @@ class ReconstructionPipeline:
         for extractor_matcher in self.extractor_matchers:
             extractor, matcher = extractor_matcher
             identifier = extractor if extractor else matcher
+
+            alg_output_df_dict = self.create_output_df(row_names='query', col_names='ref')
             print(f'==========Start localization with {extractor} / {matcher}==========\n')
 
             for ref_bin_idx in range(self.num_ref_bins):
@@ -263,15 +272,25 @@ class ReconstructionPipeline:
                         if localization_successful:
                             print(f'-----------------{identifier} Evaluation, reference bin #{ref_bin_idx}-----------------')
                             print(f"Query-Ref pair: {query_folder} - {ref_folder}")
-                            dt_mean, dr_mean, error3D_mean, error2D_mean = self._evalate_localization(
-                                                    extractor, matcher, ref_bin_idx, query_folder,
-                                                    translation_error_thres, rotation_error_thres, ground_dist_thres)
-                            dt.append(dt_mean)
-                            dr.append(dr_mean)
-                            error3D.append(error3D_mean)
-                            error2D.append(error2D_mean)
+                            eval_output = self._evalate_localization(
+                                            extractor, matcher, ref_bin_idx, query_folder,
+                                            translation_error_thres, rotation_error_thres, ground_dist_thres)
+                            dt.append(eval_output['dt_mean'])
+                            dr.append(eval_output['dr_mean'])
+                            error3D.append(eval_output['error3D_mean'])
+                            error2D.append(eval_output['error2D_mean'])
+                            alg_output_df_dict['dt_mean'][query_folder, ref_bin_idx] = eval_output['dt_mean']
+                            alg_output_df_dict['dt_std'][query_folder, ref_bin_idx] = eval_output['dt_std']
+                            alg_output_df_dict['dr_mean'][query_folder, ref_bin_idx] = eval_output['dr_mean']
+                            alg_output_df_dict['dr_std'][query_folder, ref_bin_idx] = eval_output['dr_std']
+                            alg_output_df_dict['error3D_mean'][query_folder, ref_bin_idx] = eval_output['error3D_mean']
+                            alg_output_df_dict['error3D_std'][query_folder, ref_bin_idx] = eval_output['error3D_std']
+                            alg_output_df_dict['error2D_mean'][query_folder, ref_bin_idx] = eval_output['error2D_mean']
+                            alg_output_df_dict['error2D_std'][query_folder, ref_bin_idx] = eval_output['error2D_std']
                         else:
                             all_queries_sussessful = False
+                            for name in alg_output_df_dict.keys():
+                                alg_output_df_dict[name][query_folder, ref_bin_idx] = pd.NA
                     
                     if all_queries_sussessful:
                         self.output_df_dict['dt_mean'][identifier, ref_bin_idx] = np.mean(dt)
@@ -286,7 +305,10 @@ class ReconstructionPipeline:
                         for name in self.output_df_dict.keys():
                             self.output_df_dict[name][identifier, ref_bin_idx] = pd.NA
 
+                self.save_output_df(alg_output_df_dict, os.path.join(self.output_path, identifier, 'alg_eval.xlsx'))
                 print(f'==========Finished localization for reference bin #{ref_bin_idx}==========\n')
+
+        self.save_output_df(self.output_df_dict, os.path.join(self.output_path, 'output_df.xlsx'))
 
     # def evalate_localization(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
     #     for extractor_matcher in self.extractor_matchers:
@@ -344,8 +366,6 @@ if __name__ == "__main__":
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 
     # pipeline.generate_poses(polygon_corners, minimum_distance)
-    pipeline.create_output_df()
     pipeline.localize_cameras(translation_error_thres=1.0,
                                   rotation_error_thres=3.0,
                                   ground_dist_thres=1.0)
-    pipeline.save_output_df()
