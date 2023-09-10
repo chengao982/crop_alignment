@@ -577,7 +577,6 @@ class Evaluation:
             'error2D_std': np.std(error2D_list)
         }
 
-
         return output_dict
 
     def get_localized_poses(self):
