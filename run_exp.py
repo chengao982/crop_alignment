@@ -234,7 +234,7 @@ class ReconstructionPipeline:
                             translation_error_thres=translation_error_thres,
                             rotation_error_thres=rotation_error_thres,
                             ground_dist_thres=ground_dist_thres)
-        dt_mean, dr_mean, error3D_mean, error2D_mean = evaluator.run()
+        eval_output = evaluator.run()
 
         print('----------------localized_poses------------------')
         evaluator.run_localized()
@@ -243,7 +243,7 @@ class ReconstructionPipeline:
         run_time = end_time - start_time
         print(f"Evaulation Runtime: {run_time}\n")
 
-        return dt_mean, dr_mean, error3D_mean, error2D_mean
+        return eval_output
 
     def localize_cameras(self, translation_error_thres, rotation_error_thres, ground_dist_thres):
         for extractor_matcher in self.extractor_matchers:
