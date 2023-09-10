@@ -28,8 +28,8 @@ class ReconstructionPipeline:
         self.data_path = data_path
         self.output_path = os.path.join(output_path, experiment_name)
         self.source_images_path = source_images_path
-        self.image_poses_file_name = image_poses_file_name
         self.initial_models_path = initial_models_path
+        self.image_poses_file_name = image_poses_file_name
         self.extractor_matchers = extractor_matchers
         self.pairs_dict = pairs_dict
         self.plot = True

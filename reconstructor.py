@@ -15,13 +15,14 @@ class Reconstruction:
                  data_path, 
                  output_path, 
                  image_poses_file_name, 
+                 output_model_name
                  source_images_path=None, 
                  error=0.0):
         self.data_path = data_path
         self.output_path = output_path
         self.image_poses_file_name = image_poses_file_name
         self.source_images_path = source_images_path
-        self.output_model_name = 'sparse/aligned'
+        self.output_model_name = output_model_name
 
         self.images_path = os.path.join(self.data_path, 'images4reconstruction')
         self.noisy_gps_file = os.path.join(self.output_path, 'output/camera_GPS_noisy.txt')
@@ -327,10 +328,11 @@ if __name__ == "__main__":
 
     data_path = '/path/to/data'
     output_path = '/path/to/output'
+    output_model_name = 'sparse/aligned'
     source_images_path = '/path/to/source_images'
     error = 5.0
 
-    processor = Reconstruction(data_path, output_path, source_images_path, error)
+    processor = Reconstruction(data_path, output_path, output_model_name, source_images_path, error)
     processor.run()
 
     end_time = time.time()
