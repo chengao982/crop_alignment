@@ -306,7 +306,7 @@ class ReconstructionPipeline:
                     for name in self.output_df_dict.keys():
                         self.output_df_dict[name].loc[identifier, ref_bin_idx] = pd.NA
 
-                self.save_output_df(alg_output_df_dict, os.path.join(self.output_path, identifier, 'alg_eval.xlsx'))
+                self.save_output_df(alg_output_df_dict, os.path.join(self.output_path, identifier, identifier+'_eval.xlsx'))
                 print(f'==========Finished localization for reference bin #{ref_bin_idx}==========\n')
 
         self.save_output_df(self.output_df_dict, os.path.join(self.output_path, 'output_df.xlsx'))

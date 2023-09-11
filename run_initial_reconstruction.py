@@ -58,8 +58,9 @@ class ReconstructionPipeline:
             print(f"Running reconstructor temporal model {idx} ...\n")
             reconstructor = Reconstruction(data_path=data_path, 
                                         output_path=output_path, 
-                                        source_images_path=source_images_path,
                                         image_poses_file_name=self.image_poses_file_name,
+                                        output_model_name=None,
+                                        source_images_path=source_images_path,
                                         error=self.gps_error)
             reconstructor.build_models()
 
