@@ -291,7 +291,7 @@ class ReconstructionPipeline:
                         else:
                             all_queries_sussessful = False
                             for name in alg_output_df_dict.keys():
-                                alg_output_df_dict[name].loc[query_folder, ref_bin_idx] = pd.NA
+                                alg_output_df_dict[name].loc[query_folder, ref_bin_idx] = 1.00E+99
                     
                 if all_queries_sussessful:
                     self.output_df_dict['dt_mean'].loc[identifier, ref_bin_idx] = np.mean(dt)
