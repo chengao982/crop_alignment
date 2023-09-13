@@ -168,9 +168,9 @@ pairs_2019 = {
                                               'Wheat_Lindau-Eschikon_2019_20190607_1']
 }
 
-# pairs_2020 = {
-#     'Wheat_Lindau-Eschikon_2019_20190507_1': ['Wheat_Lindau-Eschikon_2019_20190422_1'],
-# }
+pairs_plot = {
+    'Wheat_Lindau-Eschikon_2019_20190507_1': ['Wheat_Lindau-Eschikon_2019_20190422_1'],
+}
 
 pairs_2020 = {
     # 'Wheat_Lindau-Eschikon_2020_20200313_all': ['Wheat_Lindau-Eschikon_2020_20200306_all', 

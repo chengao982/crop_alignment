@@ -81,12 +81,12 @@ def visualize_loc_from_log(image_dir, query_name, loc,
 
         viz.plot_images([q_image, db_image], dpi=dpi)
         viz.plot_matches(kp_q, kp_db, color, a=0.1)
-        # viz.add_text(0, text)
-        # opts = dict(pos=(0.01, 0.01), fs=5, lcolor=None, va='bottom')
-        # viz.add_text(0, query_name, **opts)
-        # viz.add_text(1, db_name, **opts)
-        viz.save_plot(plot_directory + '/' + q + '_' + db_name + '.pdf')
-        plt.close('all')
+        opts = dict(pos=(0.01, 0.99), fs=5, lcolor=None)
+        viz.add_text(0, text, **opts)
+        opts = dict(pos=(0.01, 0.01), fs=5, lcolor=None, va='bottom')
+        viz.add_text(0, query_name, **opts)
+        viz.add_text(1, db_name, **opts)
+        viz.save_plot(plot_directory + '/' + q + '_' + db_name.split('/')[-1] + '.pdf')
 
 
 class CameraLocalization:
@@ -374,6 +374,7 @@ class CameraLocalization:
                 if self.plotting:
                     if q_id % 10 == 0:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                        plt.close('all')
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:
@@ -494,6 +495,7 @@ class CameraLocalization:
                 if self.plotting:
                     if q_id % 10 == 0:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                        plt.close('all')
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:

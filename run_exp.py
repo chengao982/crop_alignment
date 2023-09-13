@@ -3,7 +3,7 @@ from generate_image_poses import ImagePoseGenerator
 from reconstructor import Reconstruction
 from localizer import CameraLocalization
 from evaluator import Evaluation
-from query_ref_pair import pairs_2019, pairs_2020
+from query_ref_pair import pairs_2019, pairs_2020, pairs_plot
 import pandas as pd
 import numpy as np
 import time
@@ -354,7 +354,7 @@ if __name__ == "__main__":
                                       image_poses_file_name=image_poses_file_name,
                                       experiment_name=experiment_name, 
                                       extractor_matchers=extractor_matchers,
-                                      pairs_dict=pairs_2020,
+                                      pairs_dict=pairs_plot,
                                       use_previous_as_ref=True
                                       )
     
