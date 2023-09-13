@@ -168,6 +168,121 @@ pairs_2019 = {
                                               'Wheat_Lindau-Eschikon_2019_20190607_1']
 }
 
+# pairs_2020 = {
+#     'Wheat_Lindau-Eschikon_2019_20190507_1': ['Wheat_Lindau-Eschikon_2019_20190422_1'],
+# }
+
 pairs_2020 = {
-    'Wheat_Lindau-Eschikon_2019_20190507_1': ['Wheat_Lindau-Eschikon_2019_20190422_1'],
-}
+    # 'Wheat_Lindau-Eschikon_2020_20200313_all': ['Wheat_Lindau-Eschikon_2020_20200306_all', 
+    #                                             'Wheat_Lindau-Eschikon_2020_20200304_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200228_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200221_all',
+    #                                             None,
+    #                                             'Wheat_Lindau-Eschikon_2020_20200212_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200323_all': ['Wheat_Lindau-Eschikon_2020_20200319_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200313_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200306_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200304_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200228_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200221_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200401_all': ['Wheat_Lindau-Eschikon_2020_20200326_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200323_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200316_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200313_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200306_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200304_all'],
+
+    # 'Wheat_Lindau-Eschikon_2020_20200403_all': [None, 
+    #                                             'Wheat_Lindau-Eschikon_2020_20200323_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200319_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200313_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200311_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200304_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200409_all': ['Wheat_Lindau-Eschikon_2020_20200403_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200401_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200326_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200319_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200316_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200311_all'],
+                                                
+    # 'Wheat_Lindau-Eschikon_2020_20200414_all': ['Wheat_Lindau-Eschikon_2020_20200409_all', 
+    #                                             'Wheat_Lindau-Eschikon_2020_20200403_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200401_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200326_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200319_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200316_all'],
+
+                                                    
+    'Wheat_Lindau-Eschikon_2020_20200421_all': ['Wheat_Lindau-Eschikon_2020_20200417_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200411_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200406_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200401_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200326_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200323_all'],
+                                                
+    # 'Wheat_Lindau-Eschikon_2020_20200423_all': ['Wheat_Lindau-Eschikon_2020_20200417_all', 
+    #                                             'Wheat_Lindau-Eschikon_2020_20200414_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200409_all',
+    #                                             'Wheat_Lindau-Eschikon_2020_20200403_all',
+    #                                             None,
+    #                                             'Wheat_Lindau-Eschikon_2020_20200323_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200504_all': ['Wheat_Lindau-Eschikon_2020_20200429_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200423_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200421_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200414_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200409_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200403_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200514_all': ['Wheat_Lindau-Eschikon_2020_20200507_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200504_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200429_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200423_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200417_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200414_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200525_all': ['Wheat_Lindau-Eschikon_2020_20200520_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200514_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200512_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200504_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200429_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200427_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200605_all': ['Wheat_Lindau-Eschikon_2020_20200529_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200525_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200520_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200517_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200512_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200507_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200615_all': ['Wheat_Lindau-Eschikon_2020_20200611_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200605_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200602_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200525_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200522_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200517_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200625_all': ['Wheat_Lindau-Eschikon_2020_20200618_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200615_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200611_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200605_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200529_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200527_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200703_all': ['Wheat_Lindau-Eschikon_2020_20200630_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200623_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200618_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200611_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200608_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200602_all'],
+
+    'Wheat_Lindau-Eschikon_2020_20200715_all': ['Wheat_Lindau-Eschikon_2020_20200710_all', 
+                                                'Wheat_Lindau-Eschikon_2020_20200703_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200630_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200625_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200618_all',
+                                                'Wheat_Lindau-Eschikon_2020_20200615_all'],
+                                                }
