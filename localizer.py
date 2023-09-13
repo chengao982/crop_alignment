@@ -372,7 +372,7 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    if q_id % 10 == 0:
+                    if q_id % 14 == 0:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
                         plt.close('all')
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
@@ -493,7 +493,7 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    if q_id % 10 == 0:
+                    if q_id % 14 == 0:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
                         plt.close('all')
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
