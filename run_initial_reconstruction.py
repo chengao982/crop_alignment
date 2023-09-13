@@ -120,11 +120,11 @@ if __name__ == "__main__":
     # output_path = '/home/gao/crop_alignment/output'
     # source_images_path = '/mnt/buzz_newhd/home/v4rl/pheno-datasets'
 
-    data_path = '/home/gao/dataset_loftr/crop/crop_2019'
+    data_path = '/home/gao/dataset_loftr/crop/crop_2020'
     output_path = '/home/gao/crop_alignment/output'
-    source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
+    source_images_path = '/mnt/sansung-t2-croplab'
 
-    experiment_name = 'crop_2019'
+    experiment_name = 'crop_2020'
 
     image_poses_file_name = 'image_poses_tight.txt'
 
@@ -138,9 +138,9 @@ if __name__ == "__main__":
     #RB, RT, LT, LB, covering the central field
     # polygon_corners = [(57.9431,34.3998), (82.5981,66.5854), (46.6873,95.0473), (21.6404,62.4076)] # 2018
     # polygon_corners = [(95.2749,4.1106), (119.8873,36.7558), (83.6157,65.8016), (59.0033,33.1364)] # 2019
-    polygon_corners = [(91.7206,9.5767), (113.6489,38.3808), (83.6796,62.1366), (62.0337,34.1231)] # 2019 tight
+    # polygon_corners = [(91.7206,9.5767), (113.6489,38.3808), (83.6796,62.1366), (62.0337,34.1231)] # 2019 tight
     # polygon_corners = [(141.9008,71.4771), (163.0563,106.1057), (128.6143,133.3518), (106.9661,98.6574)] # 2020
-    # polygon_corners = [(140.9325,75.7563), (162.8246,103.7484), (132.9247,127.5854), (110.0208,99.6374)] # 2020 tight
+    polygon_corners = [(140.9325,75.7563), (162.8246,103.7484), (132.9247,127.5854), (110.0208,99.6374)] # 2020 tight
     minimum_distance = 1.7*1.97 # ~ 100 images per timestamp
 
     pipeline.generate_poses(polygon_corners, minimum_distance)

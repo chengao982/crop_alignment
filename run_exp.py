@@ -3,7 +3,7 @@ from generate_image_poses import ImagePoseGenerator
 from reconstructor import Reconstruction
 from localizer import CameraLocalization
 from evaluator import Evaluation
-from query_ref_pair import pairs
+from query_ref_pair import pairs_2019, pairs_2020
 import pandas as pd
 import numpy as np
 import time
@@ -331,7 +331,7 @@ if __name__ == "__main__":
     source_images_path = '/mnt/usb-ROG_ESD-S1C_N5D0AP040191-0:0'
     initial_models_path = os.path.join(output_path, 'crop_2019', 'initial_models')
 
-    experiment_name = 'exp_v1'
+    experiment_name = 'exp_plot'
 
     image_poses_file_name = 'image_poses_tight.txt'
 
@@ -354,7 +354,7 @@ if __name__ == "__main__":
                                       image_poses_file_name=image_poses_file_name,
                                       experiment_name=experiment_name, 
                                       extractor_matchers=extractor_matchers,
-                                      pairs_dict=pairs,
+                                      pairs_dict=pairs_2020,
                                       use_previous_as_ref=True
                                       )
     

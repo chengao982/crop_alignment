@@ -1,4 +1,4 @@
-pairs = {
+pairs_2019 = {
     'Wheat_Lindau-Eschikon_2019_20190322_1': ['Wheat_Lindau-Eschikon_2019_20190319_1', 
                                               'Wheat_Lindau-Eschikon_2019_20190313_1',
                                               'Wheat_Lindau-Eschikon_2019_20190306_1',
@@ -166,4 +166,8 @@ pairs = {
                                               'Wheat_Lindau-Eschikon_2019_20190617_1',
                                               'Wheat_Lindau-Eschikon_2019_20190612_1',
                                               'Wheat_Lindau-Eschikon_2019_20190607_1']
+}
+
+pairs_2020 = {
+    'Wheat_Lindau-Eschikon_2019_20190507_1': ['Wheat_Lindau-Eschikon_2019_20190422_1'],
 }
