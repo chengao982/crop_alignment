@@ -85,7 +85,7 @@ def visualize_loc_from_log(image_dir, query_name, loc,
         # opts = dict(pos=(0.01, 0.01), fs=5, lcolor=None, va='bottom')
         # viz.add_text(0, query_name, **opts)
         # viz.add_text(1, db_name, **opts)
-        viz.save_plot(plot_directory + '/' + q + '_query.pdf')
+        viz.save_plot(plot_directory + '/' + q + '_' + db_name + '.pdf')
         plt.close('all')
 
 
