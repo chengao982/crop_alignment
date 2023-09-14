@@ -88,7 +88,7 @@ def visualize_loc_from_log(image_dir, query_name, loc,
         kp_q = np.array(kp_q_l)
         kp_db = np.array(kp_db_l)
         viz.plot_images([q_image, db_image], dpi=dpi)
-        viz.plot_matches(kp_q, kp_db, 'green', a=0.2)
+        viz.plot_matches(kp_q, kp_db, 'y', a=0.2)
         opts = dict(pos=(0.01, 0.99), fs=5, lcolor=None)
         viz.add_text(0, text, **opts)
         opts = dict(pos=(0.01, 0.01), fs=5, lcolor=None, va='bottom')
