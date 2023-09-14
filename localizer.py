@@ -380,7 +380,7 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    if q_id == 56:
+                    if q_id == 42:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
                         plt.close('all')
                         break
@@ -502,7 +502,7 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    if q_id == 56:
+                    if q_id == 42:
                         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
                         plt.close('all')
                         break
