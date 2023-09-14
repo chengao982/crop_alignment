@@ -379,11 +379,11 @@ class CameraLocalization:
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
-                if self.plotting:
-                    if q_id == 42:
-                        visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
-                        plt.close('all')
-                        break
+                # if self.plotting:
+                #     if q_id == 42:
+                #         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                #         plt.close('all')
+                #         break
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:
@@ -501,11 +501,11 @@ class CameraLocalization:
                 transformations.update({q: [[R[0][0], R[0][1], R[0][2], Tr[0]], [R[1][0], R[1][1], R[1][2], Tr[1]],
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
-                if self.plotting:
-                    if q_id == 42:
-                        visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
-                        plt.close('all')
-                        break
+                # if self.plotting:
+                #     if q_id == 42:
+                #         visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                #         plt.close('all')
+                #         break
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:
