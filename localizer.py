@@ -79,8 +79,16 @@ def visualize_loc_from_log(image_dir, query_name, loc,
         color = viz.cm_RdGn(inliers_db).tolist()
         text = f'inliers: {sum(inliers_db)}/{len(inliers_db)}'
 
+        kp_q_l = []
+        kp_db_l = []
+        for i, t in enumerate(inliers_db):
+            if t:
+                kp_q_l.append(kp_q[i])
+                kp_db_l.append(kp_db[i])
+        kp_q = np.array(kp_q_l)
+        kp_db = np.array(kp_db_l)
         viz.plot_images([q_image, db_image], dpi=dpi)
-        viz.plot_matches(kp_q, kp_db, color, a=0.1)
+        viz.plot_matches(kp_q, kp_db, 'green', a=0.2)
         opts = dict(pos=(0.01, 0.99), fs=5, lcolor=None)
         viz.add_text(0, text, **opts)
         opts = dict(pos=(0.01, 0.01), fs=5, lcolor=None, va='bottom')
@@ -372,9 +380,10 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    # if q_id % 14 == 0:
-                    #     visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
-                    #     plt.close('all')
+                    if q_id % 56 == 0:
+                        visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                        plt.close('all')
+                        break
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:
@@ -493,9 +502,10 @@ class CameraLocalization:
                                             [R[2][0], R[2][1], R[2][2], Tr[2]], [0.0, 0.0, 0.0, 1.0]]})
                 
                 if self.plotting:
-                    # if q_id % 14 == 0:
-                    #     visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
-                    #     plt.close('all')
+                    if q_id % 56 == 0:
+                        visualize_loc_from_log(images, q_path, log, plot_directory, q, reconstruction)
+                        plt.close('all')
+                        break
                     # viz_3d.plot_camera_colmap(fig, pose, camera, color='rgba(0,255,0,0.5)', name=q)
                     # self.save_3d_plot(fig, os.path.join(plot_directory, 'localized_cameras'))
                     # if q_id % 8 == 0:
