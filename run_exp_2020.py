@@ -254,8 +254,8 @@ class ReconstructionPipeline:
             print(f'==========Start localization with {extractor} / {matcher}==========\n')
 
             for ref_bin_idx in range(self.num_ref_bins):
-                if ref_bin_idx in [1,3,4]:
-                    continue
+                # if ref_bin_idx in [1,3,4]:
+                #     continue
                 print(f'==========Start localization for reference bin #{ref_bin_idx}==========\n')
 
                 dt = []
